@@ -29,7 +29,7 @@ jobs:
       - name: Enviar binários como artefato ⬆️
         uses: actions/upload-artifact@v4
         with:
-          name: binarios-linux-windows
+          name: Genius-Play-Linux-Windows
           path: dist/*
   compilar-macos:
     name: Compilar macOS 🍏
@@ -58,7 +58,7 @@ jobs:
       - name: Enviar .dmg como artefato ⬆️
         uses: actions/upload-artifact@v4
         with:
-          name: Genius-Play-macOS.dmg
+          name: Genius-Play-macOS
           path: dist/*
 
   publicar:
@@ -75,8 +75,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artefatos/*.exe
-            artefatos/*.dmg
-            artefatos/*Linux*
+            artefatos/**/*.dmg
+            artefatos/**/*.exe
+            artefatos/**/*Linux*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

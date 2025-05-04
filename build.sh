@@ -98,6 +98,5 @@ build_for_os "windows" "amd64" "Genius Play! (64-bits).exe"
 build_for_os "linux" "amd64" "Genius Play! (64-bits Linux)"
 build_for_os "linux" "386" "Genius Play! (32-bits Linux)"
 build_for_os "linux" "arm64" "Genius Play! (ARM64 Linux)"
-# macOS done in separate job
 
 print_message "Build process completed." "\033[0;36m"
