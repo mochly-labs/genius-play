@@ -56,10 +56,6 @@ jobs:
           chmod +x ./build.sh
           ./build.sh maconly
 
-      - name: Criar arquivo .dmg 📀
-        run: |
-          create-dmg "dist/Genius-Play-macOS-amd64.app" "dist" --dmg-title "Genius Play" --volname "Genius Play"
-
       - name: Enviar binários do macOS como artefato ⬆️
         uses: actions/upload-artifact@v4
         with:
