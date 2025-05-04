@@ -1,3 +1,5 @@
+//go:build !darwin
+
 package main
 
 import (
@@ -8,18 +10,17 @@ import (
 	"fyne.io/systray"
 )
 
-//go:embed icon_offline.png
-var iconGray []byte
+//go:embed icon_offline.ico
+var iconGrayIco []byte
 
-//go:embed icon_online_no_arduino.png
-var iconYellow []byte
+//go:embed icon_online_no_arduino.ico
+var iconYellowIco []byte
 
-//go:embed icon_operational.png
-var iconGreen []byte
+//go:embed icon_operational.ico
+var iconGreenIco []byte
 
-//go:embed icon_offline_operational.png
-var iconBlue []byte
-
+//go:embed icon_offline_operational.ico
+var iconBlueIco []byte
 var statusText = "Desconhecido"
 var statusItemG *systray.MenuItem
 
@@ -63,19 +64,19 @@ func setStatus(mode string) {
 
 	switch mode {
 	case "Offline":
-		systray.SetIcon(iconGray)
+		systray.SetTemplateIcon(iconGrayIco, iconGrayIco)
 		statusText = "Offline"
 	case "Online (Sem Arduino)":
-		systray.SetIcon(iconYellow)
+		systray.SetTemplateIcon(iconYellowIco, iconYellowIco)
 		statusText = "Online, sem Arduino"
 	case "Online":
-		systray.SetIcon(iconGreen)
+		systray.SetTemplateIcon(iconGreenIco, iconGreenIco)
 		statusText = "Operacional"
 	case "Offline (Pareado)":
-		systray.SetIcon(iconBlue)
+		systray.SetTemplateIcon(iconBlueIco, iconBlueIco)
 		statusText = "Offline, operacional"
 	default:
-		systray.SetIcon(iconGray)
+		systray.SetTemplateIcon(iconGrayIco, iconGrayIco)
 		statusText = "Desconhecido"
 		fmt.Printf("Status desconhecido: %s\n", mode)
 	}

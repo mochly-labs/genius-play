@@ -3,7 +3,7 @@ name: Compilar & Publicar 🎉
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   compilar-linux-windows:
@@ -16,7 +16,7 @@ jobs:
       - name: Configurar Go 🐹
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: "1.22"
 
       - name: Criar pasta de saída 📁
         run: mkdir -p dist
@@ -31,18 +31,22 @@ jobs:
         with:
           name: binarios-linux-windows
           path: dist/*
-
   compilar-macos:
     name: Compilar macOS 🍏
     runs-on: macos-latest
+
     steps:
       - name: Clonar repositório 📦
         uses: actions/checkout@v4
 
+      - name: Instalar dependências 🧰
+        run: |
+          brew install create-dmg
+
       - name: Configurar Go 🐹
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: "1.22"
 
       - name: Criar pasta de saída 📁
         run: mkdir -p dist
@@ -52,11 +56,28 @@ jobs:
           chmod +x ./build.sh
           ./build.sh maconly
 
+      - name: Criar arquivo .dmg 📀
+        run: |
+          create-dmg "dist/Genius-Play-macOS-amd64.app" "dist" --dmg-title "Genius Play" --volname "Genius Play"
+
       - name: Enviar binários do macOS como artefato ⬆️
         uses: actions/upload-artifact@v4
         with:
           name: binarios-macos
           path: dist/*macOS*
+
+      - name: Enviar .dmg como artefato ⬆️
+        uses: actions/upload-artifact@v4
+        with:
+          name: Genius-Play-macOS.dmg
+          path: dist/Genius-Play-macOS-amd64.dmg
+
+      - name: Publicar no GitHub Releases 🚀
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/Genius-Play-macOS-amd64.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publicar:
     name: Publicar Release 🚀

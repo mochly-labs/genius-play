@@ -24,8 +24,10 @@ require (
 	github.com/cloudflare/circl v1.6.0 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
+	github.com/cratonica/trayhost v0.0.0-20150112162955-98495206fd96 // indirect
 	github.com/creack/goselect v0.1.2 // indirect
 	github.com/dchest/jsmin v1.0.0 // indirect
+	github.com/energye/systray v1.0.2 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/gen2brain/shm v0.1.0 // indirect
