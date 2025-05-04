@@ -3,7 +3,7 @@
 Um minigame de passa ou repassa com compatibilidade com Arduino.
 Atualizado em Abril-Maio de 2025 para novo visual e modo de jogo, com otimização extrema e reescrita do código.
 
-> [!NOTE]
+> [!WARNING]
 > Versão ALPHA, pode conter bugs e erros extremos.
 
 ## 🚀 Como Rodar
