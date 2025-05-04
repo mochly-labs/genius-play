@@ -92,11 +92,11 @@ if [ "$1" = "maconly" ]; then
 fi
 
 # Windows
-build_for_os "windows" "386" "Genius Play! (32-bits).exe"
-build_for_os "windows" "amd64" "Genius Play! (64-bits).exe"
+build_for_os "windows" "386" "Genius.Play.x86.exe"
+build_for_os "windows" "amd64" "Genius.Play.x64.exe"
 # Linux
-build_for_os "linux" "amd64" "Genius Play! (64-bits Linux)"
-build_for_os "linux" "386" "Genius Play! (32-bits Linux)"
-build_for_os "linux" "arm64" "Genius Play! (ARM64 Linux)"
+build_for_os "linux" "amd64" "Genius.Play.x64.Linux"
+build_for_os "linux" "386" "Genius.Play.x86.Linux"
+build_for_os "linux" "arm64" "Genius.Play.arm64.Linux"
 
 print_message "Build process completed." "\033[0;36m"

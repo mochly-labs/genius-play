@@ -59,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Genius-Play-macOS
-          path: dist/*
+          path: dist/*.dmg
 
   publicar:
     name: Publicar Release 🚀
