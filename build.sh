@@ -79,7 +79,7 @@ build_mac_app_bundle() {
 </plist>
 EOF
 
-    create-dmg "dist/Genius-Play-macOS-$arch.app" "dist/Genius-Play-macOS-$arch.dmg" --dmg-title "Genius Play" --volname "Genius Play"
+    create-dmg "dist/Genius-Play-macOS-$arch.dmg" "dist/Genius-Play-macOS-$arch.app" --dmg-title "Genius Play" --volname "Genius Play"
     print_message ".app bundle created at $app_path 🍏✨" "\033[0;32m"
 }
 
