@@ -55,25 +55,11 @@ jobs:
         run: |
           chmod +x ./build.sh
           ./build.sh maconly
-
-      - name: Enviar binários do macOS como artefato ⬆️
-        uses: actions/upload-artifact@v4
-        with:
-          name: binarios-macos
-          path: dist/*macOS*
-
       - name: Enviar .dmg como artefato ⬆️
         uses: actions/upload-artifact@v4
         with:
           name: Genius-Play-macOS.dmg
-          path: dist/Genius-Play-macOS-amd64.dmg
-
-      - name: Publicar no GitHub Releases 🚀
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/Genius-Play-macOS-amd64.dmg
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          path: dist/*
 
   publicar:
     name: Publicar Release 🚀

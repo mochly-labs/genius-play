@@ -32,7 +32,7 @@ build_for_os() {
 build_mac_app_bundle() {
     local arch=$1
     local bin_name="GeniusPlay-macOS-$arch"
-    local app_name="Genius Play!.app"
+    local app_name="Genius-Play.$arch.app"
     local app_path="dist/$app_name"
     local exec_path="$app_path/Contents/MacOS"
     local res_path="$app_path/Contents/Resources"
@@ -79,8 +79,8 @@ build_mac_app_bundle() {
 </plist>
 EOF
 
-    create-dmg "dist/Genius-Play-macOS-$arch.dmg" "dist/Genius-Play-macOS-$arch.app" --dmg-title "Genius Play" --volname "Genius Play"
-    print_message ".app bundle created at $app_path 🍏✨" "\033[0;32m"
+    create-dmg "dist/Genius-Play-macOS-$arch.dmg" "$app_path" --dmg-title "Genius Play" --volname "Genius Play"
+    print_message ".app bundle created at dist/Genius-Play-macOS-$arch.dmg 🍏✨" "\033[0;32m"
 }
 
 
