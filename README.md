@@ -38,12 +38,16 @@ Atualizado em Abril-Maio de 2025 para novo visual e modo de jogo, com otimizaç�
 ## 🔌 Fiação
 
 🔹 **Botão Time 1** → Pino **7**
+
 🔹 **Botão Time 2** → Pino **8**
+
 🔹 **Botão Reset** → Pino **2**
 
 ### Luzes (não implementado ainda)
 🔹 **Luz Time 1** → Pino **9**
+
 🔹 **Luz Time 2** → Pino **10**
+
 🔹 **Luz "GO"** → Pino **11**
 
 ---
