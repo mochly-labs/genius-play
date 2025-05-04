@@ -26,9 +26,7 @@ Atualizado em **Abril-Maio de 2025** com novo visual, novo sistema de perguntas,
 
 ---
 
-## 📚 Para mais informações acesse a wiki aqui no github!
-
----
+## 📚 Para mais informações, acesse a wiki!
 
 ## 👥 Feito por
 
