@@ -1,0 +1,7 @@
+Like the div above, make a div for a question including the following:
+- Question Text ( Add ID, adaptive text size )
+- Question Image (Hideable) (Add ID)
+- 2 or more (up to 20) alternatives (benchmark that, add 20 alternatives starting from a) (Put them in a container for javascript manipulation)
+- Alternative Image (Add Control ID)
+- Timer at the bottom (reverse progress bar, the start is on the middle and the two borders are the end) (add CONTROL id)
+- Team select at the bottom (before the timer) with a red allow pointing to the left on the left and a blue one pointing to the right on the right (add IDS to them to control) and in the middle a text saying (JÁ!)
