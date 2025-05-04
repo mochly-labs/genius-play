@@ -1,4 +1,4 @@
-name: Build & Release 🎉
+name: Compilar & Publicar 🎉
 
 on:
   push:
@@ -6,69 +6,72 @@ on:
       - 'v*'
 
 jobs:
-  build-linux-windows:
+  compilar-linux-windows:
+    name: Compilar Linux e Windows 🐧🪟
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code 📦
+      - name: Clonar repositório 📦
         uses: actions/checkout@v4
 
-      - name: Set up Go 🐹
+      - name: Configurar Go 🐹
         uses: actions/setup-go@v5
         with:
           go-version: '1.22'
 
-      - name: Make dist folder 📁
+      - name: Criar pasta de saída 📁
         run: mkdir -p dist
 
-      - name: Run build script ��️
+      - name: Executar script de build 🔧
         run: |
           chmod +x ./build.sh
           ./build.sh
 
-      - name: Upload artifacts 🕊️
+      - name: Enviar binários como artefato ⬆️
         uses: actions/upload-artifact@v4
         with:
-          name: binaries-linux-windows
+          name: binarios-linux-windows
           path: dist/*
 
-  build-macos:
+  compilar-macos:
+    name: Compilar macOS 🍏
     runs-on: macos-latest
     steps:
-      - name: Checkout code 🍎
+      - name: Clonar repositório 📦
         uses: actions/checkout@v4
 
-      - name: Set up Go 🐹
+      - name: Configurar Go 🐹
         uses: actions/setup-go@v5
         with:
           go-version: '1.22'
 
-      - name: Make dist folder 📁
+      - name: Criar pasta de saída 📁
         run: mkdir -p dist
 
-      - name: Run macOS build 🛠️
+      - name: Executar build para macOS 🔧
         run: |
           chmod +x ./build.sh
           ./build.sh maconly
 
-      - name: Upload macOS artifacts 🕊️
+      - name: Enviar binários do macOS como artefato ⬆️
         uses: actions/upload-artifact@v4
         with:
-          name: binaries-macos
+          name: binarios-macos
           path: dist/*macOS*
 
-  release:
-    needs: [build-linux-windows, build-macos]
+  publicar:
+    name: Publicar Release 🚀
+    needs: [compilar-linux-windows, compilar-macos]
     runs-on: ubuntu-latest
     steps:
-      - name: Download all artifacts 📦
+      - name: Baixar todos os artefatos 📥
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          path: artefatos
 
-      - name: Create GitHub Release 🎀
+      - name: Criar Release no GitHub 🌟
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/**/*
+            artefatos/**/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
