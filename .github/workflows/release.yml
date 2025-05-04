@@ -1,0 +1,74 @@
+name: Build & Release 🎉
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-linux-windows:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code 📦
+        uses: actions/checkout@v4
+
+      - name: Set up Go 🐹
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Make dist folder 📁
+        run: mkdir -p dist
+
+      - name: Run build script ��️
+        run: |
+          chmod +x ./build.sh
+          ./build.sh
+
+      - name: Upload artifacts 🕊️
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-linux-windows
+          path: dist/*
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code 🍎
+        uses: actions/checkout@v4
+
+      - name: Set up Go 🐹
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Make dist folder 📁
+        run: mkdir -p dist
+
+      - name: Run macOS build 🛠️
+        run: |
+          chmod +x ./build.sh
+          ./build.sh maconly
+
+      - name: Upload macOS artifacts 🕊️
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-macos
+          path: dist/*macOS*
+
+  release:
+    needs: [build-linux-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts 📦
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create GitHub Release 🎀
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
