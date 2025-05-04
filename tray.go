@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mxmauro/go-systray"
+	"fyne.io/systray"
 )
 
 //go:embed icon_offline.png
@@ -40,12 +40,12 @@ func onReady(status *string) {
 	statusItemG = statusItem
 
 	mQuit := systray.AddMenuItem("Sair", "Desligar o Daemon")
-
-	mQuit.Click(func() {
+	go func() {
+		<-mQuit.ClickedCh
 		systray.Quit()
-
+		cancel()
 		os.Exit(0)
-	})
+	}()
 }
 
 func onExit() {

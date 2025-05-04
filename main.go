@@ -47,9 +47,9 @@ var (
 	currentStatus = &DeviceStatus{Online: false}
 )
 
-func app() {
+var ctx, cancel = context.WithCancel(context.Background())
 
-	ctx, cancel := context.WithCancel(context.Background())
+func app() {
 	defer cancel()
 
 	browserState := &ui.BrowserState{}

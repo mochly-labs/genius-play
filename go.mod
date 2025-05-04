@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	fyne.io/systray v1.11.0 // indirect
 	gioui.org/cmd v0.8.0 // indirect
 	github.com/Kodeworks/golang-image-ico v0.0.0-20141118225523-73f0f4cfade9 // indirect
 	github.com/ProtonMail/go-crypto v1.1.6 // indirect
