@@ -14,9 +14,9 @@
     <link href="css/sweetalert.css" rel="stylesheet" />
     <link href="icons/favicon.png" rel="icon" type="image/png" />
   </head>
-  <body class="h-screen w-full bg-black">
+  <body class="h-screen w-full shadow-xl bg-black">
     <div
-      class="loading-screen fixed inset-0 bg-black backdrop-blur-md flex flex-col items-center justify-center"
+      class="loading-screen fixed inset-0 shadow-xl bg-black backdrop-blur-md flex flex-col items-center justify-center"
       id="loading-screen"
     >
       <div class="logo mb-8">
@@ -52,13 +52,13 @@
       </div>
       <div
         style="z-index: -5"
-        class="bg-black blue-md fixed inset-0 flex items-center justify-center"
+        class="shadow-xl bg-black blue-md fixed inset-0 flex items-center justify-center"
       >
         <canvas id="particles-canvas" class="absolute inset-0 blur-md"></canvas>
       </div>
     </div>
     <div
-      class="small-device-message xl:hidden fixed inset-0 bg-black/70 flex items-center justify-center backdrop-blur-xl"
+      class="small-device-message xl:hidden fixed inset-0 shadow-xl bg-black/70 flex items-center justify-center backdrop-blur-xl"
       style="z-index: 1061"
     >
       <div class="text-center text-white">
@@ -80,7 +80,7 @@
         ></div>
         <div class="before-game max-w-full w-full h-full p-2 flex gap-5">
           <div
-            class="sidebar xl:max-w-2/5 xl:w-2/5 2xl:max-w-1/5 2xl:w-1/5 h-full bg-black/50 rounded-md h-full"
+            class="sidebar xl:max-w-2/5 xl:w-2/5 2xl:max-w-1/5 2xl:w-1/5 h-full shadow-xl bg-black/30 rounded-md h-full"
           >
             <div
               class="content-header flex justify-center items-center p-4 py-8 relative h-full"
@@ -158,7 +158,7 @@
                 </div>
                 <div class="absolute bottom-24 left-0 w-full px-8">
                   <div
-                    class="user-container p-4 bg-white/10 backdrop-blur-sm rounded-md w-full"
+                    class="user-container p-4 shadow-xl bg-black/10 backdrop-blur-sm rounded-md w-full"
                   >
                     <div class="user-profile flex items-center gap-4">
                       <div
@@ -176,7 +176,7 @@
                   </div>
                 </div>
                 <div
-                  class="copyright absolute bottom-0 left-0 right-0 text-center text-white text-sm backdrop-blur-md bg-white/10 border-t border-white/20 py-4 shadow-inner rounded-b-md"
+                  class="copyright absolute bottom-0 left-0 right-0 text-center text-white text-sm backdrop-blur-md shadow-xl bg-black/10 border-t border-white/20 py-4 shadow-inner rounded-b-md"
                 >
                   <p class="mb-2">
                     <a
@@ -211,14 +211,14 @@
             </div>
           </div>
           <div
-            class="content max-w-4/5 w-4/5 h-full bg-black/50 rounded-md p-4 text-white"
+            class="content max-w-4/5 w-4/5 h-full shadow-xl bg-black/30 rounded-md p-4 text-white"
           >
             <div
               class="status-section flex flex-col items-center justify-center h-full text-center sect"
               id="status-section"
             >
               <h2
-                class="text-2xl font-bold mb-6 bg-white/20 backdrop-blur-sm text-white p-2 rounded-md px-4"
+                class="text-2xl font-bold mb-6 shadow-xl bg-black/10 backdrop-blur-sm text-white p-2 rounded-md px-4"
               >
                 <span id="time-of-day"></span>
                 <script>
@@ -239,7 +239,7 @@
               </h2>
               <ul class="space-y-4 w-3/4">
                 <li
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-wifi mr-2 text-green-400"></i
@@ -250,7 +250,7 @@
                   >
                 </li>
                 <li
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-id-badge mr-2 text-blue-400"></i>UUID
@@ -261,7 +261,7 @@
                   >
                 </li>
                 <li
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-gamepad mr-2 text-purple-400"></i
@@ -272,14 +272,14 @@
                   >
                 </li>
                 <li
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-code-branch mr-2 text-yellow-400"></i
                     >Versão:
                   </span>
                   <span class="text-yellow-400 font-bold" id="game-version"
-                    >Alpha v2.0.1</span
+                    >Alpha v2.0.2</span
                   >
                 </li>
               </ul>
@@ -290,7 +290,7 @@
               id="config-section"
             >
               <h2
-                class="text-2xl font-bold mb-6 bg-white/20 backdrop-blur-sm p-2 rounded-md px-4 animate-gradient"
+                class="text-2xl font-bold mb-6 shadow-xl bg-black/5 backdrop-blur-sm p-2 rounded-md px-4 animate-gradient"
               >
                 <i class="fa-solid fa-cogs mr-2"></i>Configurações
               </h2>
@@ -300,7 +300,7 @@
                   Configurações Gerais
                 </h3>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-volume-high mr-2 text-green-400"></i
@@ -312,7 +312,7 @@
                   </label>
                 </div>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-music mr-2 text-yellow-400"></i
@@ -324,7 +324,7 @@
                   </label>
                 </div>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-bell mr-2 text-purple-400"></i>Efeitos
@@ -336,7 +336,7 @@
                   </label>
                 </div>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-volume-high mr-2 text-blue-400"></i
@@ -352,7 +352,7 @@
                   />
                 </div>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-volume-off mr-2 text-purple-400"></i
@@ -373,7 +373,7 @@
                   Informações do Jogador
                 </h3>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-id-card mr-2 text-yellow-400"></i
@@ -381,7 +381,7 @@
                   </span>
                   <span
                     id="player-uuid"
-                    class="bg-black/40 backdrop-blur-sm text-white rounded-md p-2 w-1/2 text-center"
+                    class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-2 w-1/2 text-center"
                   >
                     Não cadastrado
                   </span>
@@ -392,7 +392,7 @@
                   Configurações do Jogo
                 </h3>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-clock mr-2 text-purple-400"></i>Tempo
@@ -401,14 +401,14 @@
                   <input
                     type="number"
                     id="round-time"
-                    class="bg-black/40 backdrop-blur-sm text-white rounded-md p-2 w-1/4"
+                    class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-2 w-1/4"
                     min="10"
                     max="300"
                     value="60"
                   />
                 </div>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-clock mr-2 text-red-400"></i>Tempo da
@@ -417,14 +417,14 @@
                   <input
                     type="number"
                     id="intermission-time"
-                    class="bg-black/40 backdrop-blur-sm text-white rounded-md p-2 w-1/4"
+                    class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-2 w-1/4"
                     min="10"
                     max="300"
                     value="5"
                   />
                 </div>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-clock mr-2 text-yellow-400"></i>Tempo
@@ -433,14 +433,14 @@
                   <input
                     type="number"
                     id="release-time"
-                    class="bg-black/40 backdrop-blur-sm text-white rounded-md p-2 w-1/4"
+                    class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-2 w-1/4"
                     min="10"
                     max="300"
                     value="10"
                   />
                 </div>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-palette mr-2 text-blue-400"></i>Cores
@@ -448,7 +448,7 @@
                   </span>
                   <select
                     id="team-colors"
-                    class="bg-black/40 backdrop-blur-sm text-white rounded-md p-2 w-1/2"
+                    class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-2 w-1/2"
                   >
                     <option value="#FF0000-#FFA500" selected>
                       Vermelho e Laranja
@@ -513,7 +513,7 @@
                   </select>
                 </div>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-eye-slash mr-2 text-red-400"></i
@@ -521,7 +521,7 @@
                   </span>
                   <select
                     id="hide-score"
-                    class="bg-black/40 backdrop-blur-sm text-white rounded-md p-2 w-1/2"
+                    class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-2 w-1/2"
                   >
                     <option value="none">Sem placar</option>
                     <option value="during-game">Durante o jogo</option>
@@ -534,7 +534,7 @@
                   Configurações dos Times
                 </h3>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-users mr-2 text-green-400"></i>Nome
@@ -547,7 +547,7 @@
                 </div>
                 <div id="team-name-inputs" class="hidden space-y-4">
                   <div
-                    class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                    class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                   >
                     <span class="font-semibold text-white">
                       <i class="fa-solid fa-users text-red-400 mr-2"></i>Nome do
@@ -556,12 +556,12 @@
                     <input
                       type="text"
                       id="team1-name"
-                      class="bg-black/40 backdrop-blur-sm text-white rounded-md p-2 w-1/2"
+                      class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-2 w-1/2"
                       placeholder="Digite o nome do Time 1"
                     />
                   </div>
                   <div
-                    class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                    class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                   >
                     <span class="font-semibold text-white">
                       <i class="fa-solid fa-users text-blue-400 mr-2"></i>Nome
@@ -570,7 +570,7 @@
                     <input
                       type="text"
                       id="team2-name"
-                      class="bg-black/40 backdrop-blur-sm text-white rounded-md p-2 w-1/2"
+                      class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-2 w-1/2"
                       placeholder="Digite o nome do Time 2"
                     />
                   </div>
@@ -581,7 +581,7 @@
                   Configurações Visuais
                 </h3>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-image mr-2 text-yellow-400"></i>Fundo
@@ -590,7 +590,7 @@
                   <div class="file-upload-wrapper">
                     <label
                       for="game-background"
-                      class="bg-black/40 backdrop-blur-sm text-white rounded-md p-3 w-full cursor-pointer flex items-center justify-center hover:bg-gray-600 transition"
+                      class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-3 w-full cursor-pointer flex items-center justify-center hover:bg-gray-600 transition"
                     >
                       <i class="fa-solid fa-upload mr-2"></i>Escolher Imagem
                     </label>
@@ -603,7 +603,7 @@
                   </div>
                 </div>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-music mr-2 text-green-400"></i>Música
@@ -612,7 +612,7 @@
                   <div class="file-upload-wrapper">
                     <label
                       for="game-music"
-                      class="bg-black/40 backdrop-blur-sm text-white rounded-md p-3 w-full cursor-pointer flex items-center justify-center hover:bg-gray-600 transition"
+                      class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-3 w-full cursor-pointer flex items-center justify-center hover:bg-gray-600 transition"
                     >
                       <i class="fa-solid fa-upload mr-2"></i>Escolher Música
                     </label>
@@ -630,7 +630,7 @@
                   Configurações Avançadas
                 </h3>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-cake-candles mr-2 text-red-400"></i
@@ -642,7 +642,7 @@
                   </label>
                 </div>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-question mr-2 text-green-400"></i>Modo
@@ -650,7 +650,7 @@
                   </span>
                   <select
                     id="wrong-question-mode"
-                    class="bg-black/40 backdrop-blur-sm text-white rounded-md p-2 w-1/2"
+                    class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-2 w-1/2"
                   >
                     <option value="skip">Pular</option>
                     <option value="pass">Repassar</option>
@@ -658,7 +658,7 @@
                   </select>
                 </div>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-random mr-2 text-yellow-400"></i
@@ -666,7 +666,7 @@
                   </span>
                   <select
                     id="randomize-mode"
-                    class="bg-black/40 backdrop-blur-sm text-white rounded-md p-2 w-1/2"
+                    class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-2 w-1/2"
                   >
                     <option value="alternatives-only">
                       Alternativas Somente
@@ -682,7 +682,7 @@
                   Informações Fixas
                 </h3>
                 <div
-                  class="flex items-center justify-between bg-black/20 backdrop-blur-sm p-4 rounded-lg shadow-md"
+                  class="flex items-center justify-between shadow-xl bg-black/10 backdrop-blur-sm p-4 rounded-lg shadow-md"
                 >
                   <span class="font-semibold text-white">
                     <i class="fa-solid fa-info-circle mr-2 text-blue-400"></i
@@ -733,7 +733,7 @@
               id="file-uploader-section"
             >
               <h2
-                class="text-2xl font-bold mb-6 bg-white/20 backdrop-blur-sm p-2 rounded-md px-4"
+                class="text-2xl font-bold mb-6 shadow-xl bg-black/10 backdrop-blur-sm p-2 rounded-md px-4"
               >
                 <i class="fa-solid fa-brain mr-2"></i>Gerenciador de
                 Questionários
@@ -744,12 +744,12 @@
                 <input
                   type="text"
                   id="search-input"
-                  class="bg-black/40 backdrop-blur-sm text-white rounded-md p-3 w-full"
+                  class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-3 w-full"
                   placeholder="Pesquisar questionários..."
                 />
                 <label
                   for="file-input"
-                  class="bg-black/40 backdrop-blur-sm text-white rounded-md p-4 cursor-pointer flex items-center justify-center hover:bg-gray-600 transition ml-4"
+                  class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-4 cursor-pointer flex items-center justify-center hover:bg-gray-600 transition ml-4"
                 >
                   <i class="fa-solid fa-upload"></i>
                 </label>
@@ -760,7 +760,7 @@
                   accept=".json"
                 />
                 <button
-                  class="bg-black/40 backdrop-blur-sm text-white rounded-md p-4 cursor-pointer flex items-center justify-center hover:bg-gray-600 transition ml-4 refresh-btn"
+                  class="shadow-xl bg-black/10 backdrop-blur-sm text-white rounded-md p-4 cursor-pointer flex items-center justify-center hover:bg-gray-600 transition ml-4 refresh-btn"
                   id="refresh-button"
                 >
                   <i class="fa-solid fa-refresh"></i>
@@ -795,7 +795,7 @@
         >
       </div>
       <div
-        class="flex flex-col items-center justify-center p-24 bg-white/20 backdrop-blur-md rounded-lg"
+        class="flex flex-col items-center justify-center p-24 shadow-xl bg-black/10 backdrop-blur-md rounded-lg"
         id="start-screen"
       >
         <button
@@ -837,7 +837,7 @@
       <!-- Loading/Intermission Screen -->
       <div
         id="intermission-screen"
-        class="fixed inset-0 bg-black/70 flex flex-col items-center justify-center hidden"
+        class="fixed inset-0 shadow-xl bg-black/70 flex flex-col items-center justify-center hidden"
       >
         <h1 class="text-4xl text-white font-bold mb-4">
           <i class="fa-solid fa-hourglass-half mr-2"></i>Intermissão
@@ -855,7 +855,7 @@
         </p>
         <div
           id="intermission-timer-container"
-          class="timer-container fixed bottom-0 left-0 w-full h-4 bg-black/40 overflow-hidden flex justify-center align-center items-center rounded-lg"
+          class="timer-container fixed bottom-0 left-0 w-full h-4 shadow-xl bg-black/10 overflow-hidden flex justify-center align-center items-center rounded-lg"
         >
           <div
             id="intermission-timer-progress"
@@ -876,14 +876,14 @@
       <!-- Score/Winner Screen -->
       <div
         id="score-screen"
-        class="fixed inset-0 bg-black/80 flex flex-col items-center hidden justify-center"
+        class="fixed inset-0 shadow-xl bg-black/80 flex flex-col items-center hidden justify-center"
       >
         <div id="score-win-img">
           <img src="/img/win.png" class="w-auto h-20" />
         </div>
         <h1 class="text-6xl text-white font-bold mb-6 mt-12">Pontuação</h1>
         <div
-          class="scoreboard bg-white/10 p-6 rounded-lg backdrop-blur-md shadow-lg text-white w-3/4 max-w-2xl flex flex-col gap-3"
+          class="scoreboard shadow-xl bg-black/10 p-6 rounded-lg backdrop-blur-md shadow-lg text-white w-3/4 max-w-2xl flex flex-col gap-3"
         >
           <div class="team-score flex justify-between items-center">
             <span class="text-2xl font-bold text-red-400" id="team-red-name"
@@ -932,7 +932,7 @@
         </div>
       </div>
       <div
-        class="question-container flex flex-col items-center justify-center p-8 bg-white/1 backdrop-blur-sm rounded-lg w-full h-full hidden"
+        class="question-container flex flex-col items-center justify-center p-8 shadow-xl bg-black/10 backdrop-blur-sm rounded-lg w-full h-full hidden"
         id="question-screen"
       >
         <div class="w-full h-full flex flex-col justify-center align-center">
@@ -958,7 +958,7 @@
 
         <!-- Team Select -->
         <div
-          class="team-selection flex items-center justify-between w-full max-w-full mx-20 bg-black/20 backdrop-blur-md py-6 px-12 rounded-lg mt-8 mb-4 mt-auto min-h-7xl"
+          class="team-selection flex items-center justify-between w-full max-w-full mx-20 shadow-xl bg-black/10 backdrop-blur-md py-6 px-12 rounded-lg mt-8 mb-4 mt-auto min-h-7xl"
           id="team-selection"
         >
           <div
@@ -1003,7 +1003,7 @@
         <!-- Timer -->
         <div
           id="timer-container"
-          class="timer-container fixed bottom-0 left-0 w-full h-4 bg-black/40 overflow-hidden flex justify-center align-center items-center rounded-lg"
+          class="timer-container fixed bottom-0 left-0 w-full h-4 shadow-xl bg-black/10 overflow-hidden flex justify-center align-center items-center rounded-lg"
         >
           <div
             id="timer-progress"

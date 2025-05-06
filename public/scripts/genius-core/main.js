@@ -116,11 +116,11 @@ async function LoadGame() {
 
     if (settings["team-names"] === false) {
       teamElements.redName.textContent = `${
-        settings["team1-name"] || "Team Red"
-      }:`;
+        settings["team1-name"] || "Time 1"
+      }`;
       teamElements.blueName.textContent = `${
-        settings["team2-name"] || "Team Blue"
-      }:`;
+        settings["team2-name"] || "Team 2"
+      }`;
     }
 
     const loadedQuestionary = await getQuestionaryById(questionary.id);

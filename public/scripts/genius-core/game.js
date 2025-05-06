@@ -256,8 +256,14 @@ class Game {
     winnerText.textContent =
       winnerEmoji + " " + winnerText.textContent + " " + winnerEmoji;
     this.atualizarScore(true, 0);
-    if (this.scores.left === this.scores.right) {
-      winnerText.textContent = "Empate! Todo mundo arrasou!";
+      if (this.scores.left === this.scores.right) {
+        const totalScore = this.scores.left + this.scores.right;
+        const totalPossibleScore = this.quiz.questions.length;
+        const scoreRatio = totalScore / totalPossibleScore;
+      
+        winnerText.textContent = scoreRatio <= 0.5 
+          ? "Empate! Falta estudo..." 
+          : "Empate! Todo mundo arrasou!";
     } else {
       const team =
         this.scores.left > this.scores.right
@@ -415,8 +421,8 @@ class Game {
 
     const elements = pergunta.alternatives.map((alt, i) => {
       const el = createAlternative(alt, pergunta.optionImages?.[i], i);
-      el.querySelector("button").dataset.id = `option-${i}`;
-      el.querySelector("button").onclick = () =>
+      el.dataset.id = `option-${i}`;
+      el.onclick = () =>
         this.verificarResposta(`${alt}`);
       return el;
     });

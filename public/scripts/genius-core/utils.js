@@ -15,25 +15,33 @@ const wsUrl = `ws://${wsHost}:${wsPort}/ws`;
 const httpUrl = wsUrl
   .replace(/^wss?:\/\//, (m) => (m === "wss://" ? "https://" : "http://"))
   .replace("/ws", "");
-
 function createAlternative(name, image, id) {
+  // Create wrapper with flex layout
   const alternativeWrapper = document.createElement("div");
   alternativeWrapper.className =
-    "alternative-wrapper flex flex-col items-center";
+    "alternative-wrapper flex flex-col items-center bg-black/10 hover:bg-black/60 backdrop-blur-sm p-6 rounded-lg cursor-pointer shadow-lg";
+  alternativeWrapper.id = `alternative-${id}`;
 
-  const img = document.createElement("img");
-  img.src = image;
-  img.alt = `Imagem da Alternativa`;
-  img.className = "alternative-img w-24 h-24 object-cover rounded-lg mb-2";
-  const button = document.createElement("button");
-  button.id = `alternative-${id}`;
-  button.className =
-    "alternative-btn bg-black/40 backdrop-blur-sm text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-gray-600 transition-all text-lg";
-  button.textContent = `${name}`;
-
-  if (img && img.src && !img.src.endsWith("/null"))
+  // Create image element if there is a valid image
+  if (image && image !== "null" && image !== "") {
+    const img = document.createElement("img");
+    img.src = image;
+    img.alt = `Imagem da Alternativa ${name}`;
+    img.className = "alternative-img w-24 h-24 object-cover rounded-lg mb-2";
     alternativeWrapper.appendChild(img);
-  alternativeWrapper.appendChild(button);
+  }
+  // Create h1 element with adaptive styling
+  const h1 = document.createElement("h1");
+  h1.className =
+    "alternative-btn text-white font-bold py-3 px-6 rounded-lg transition-all text-lg";
+  h1.textContent = name;
+
+  // Add h1 to wrapper
+  alternativeWrapper.appendChild(h1);
+
+  // Add data attribute to track if it has an image (can be used for CSS targeting)
+  alternativeWrapper.dataset.hasImage =
+    image && image !== "null" && image !== "" ? "true" : "false";
 
   return alternativeWrapper;
 }
