@@ -3,7 +3,7 @@ name: Compilar & Publicar 🎉
 on:
   push:
     tags:
-      - "v*"
+      - "*"
 
 jobs:
   compilar-linux-windows:
