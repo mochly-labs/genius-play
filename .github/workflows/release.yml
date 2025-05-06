@@ -1,9 +1,9 @@
 name: Compilar & Publicar 🎉
-
 on:
   push:
     tags:
-      - "*"
+      - 'v*'  # Match tags that start with 'v'
+      - '*.*.*'  # Match semantic versioning tags
 
 jobs:
   compilar-linux-windows:
