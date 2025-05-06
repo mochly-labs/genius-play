@@ -1,5 +1,6 @@
 name: Compilar & Publicar 🎉
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'  # Match tags that start with 'v'
