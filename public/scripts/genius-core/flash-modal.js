@@ -194,6 +194,93 @@ const FlashModal = (() => {
       }, duration);
     });
   }
+  /**
+   * Displays a quick modal indicating which team buzzed in.
+   *
+   * @param {"left"|"right"} side - The side that buzzed ("left" or "right").
+   * @param {string} teamName - The name of the team.
+   * @param {string} color - The team's color (any valid CSS color).
+   * @returns {Promise} A promise that resolves when the modal closes.
+   */function teamBuzz(side, teamName, color) {
+     return new Promise((resolve) => {
+       clearTimeout(timeoutId);
 
-  return { show };
+       const modal = document.createElement("div");
+       modal.className = "flash-modal team-buzz";
+
+       Object.assign(modal.style, {
+         position: "fixed",
+         top: "0",
+         left: "0",
+         width: "100vw",
+         height: "100vh",
+         backgroundColor: "rgba(0,0,0,0.5)",
+         backdropFilter: "blur(4px)",
+         display: "flex",
+         alignItems: "center",
+         justifyContent: side === "left" ? "flex-start" : "flex-end",
+         padding: "2rem",
+         zIndex: 999999,
+         opacity: "0",
+         transition: "opacity 0.2s ease",
+         pointerEvents: "none",
+       });
+
+       const container = document.createElement("div");
+       container.className = "team-buzz-container";
+       Object.assign(container.style, {
+         display: "flex",
+         alignItems: "center",
+         gap: "1rem",
+         animation: "pop 0.3s ease forwards",
+       });
+
+       const arrow = document.createElement("div");
+       arrow.className = "fancy-arrow";
+       Object.assign(arrow.style, {
+         width: "40px",
+         height: "40px",
+         borderTop: `6px solid ${color}`,
+         borderRight: `6px solid ${color}`,
+         transform: side === "left" ? "rotate(-135deg)" : "rotate(45deg)",
+         animation: "arrow-glow 1.2s infinite ease-in-out",
+         filter: `drop-shadow(0 0 6px ${color})`,
+       });
+
+       const name = document.createElement("div");
+       name.textContent = teamName;
+       Object.assign(name.style, {
+         fontSize: "3rem",
+         fontWeight: "900",
+         color: color,
+         textShadow: `0 0 6px ${color}`,
+       });
+
+       if (side === "left") {
+         container.appendChild(arrow);
+         container.appendChild(name);
+       } else {
+         container.appendChild(name);
+         container.appendChild(arrow);
+       }
+
+       modal.appendChild(container);
+       document.body.appendChild(modal);
+
+       requestAnimationFrame(() => {
+         modal.style.opacity = "1";
+       });
+
+       timeoutId = setTimeout(() => {
+         modal.style.opacity = "0";
+         setTimeout(() => {
+           modal.remove();
+           resolve();
+         }, 300);
+       }, 1500);
+     });
+   }
+
+
+  return { show, teamBuzz };
 })();

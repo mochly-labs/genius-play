@@ -53,8 +53,8 @@ void handleSerialCommands() {
   String command = Serial.readStringUntil('\n');
   command.trim();
 
-  if (command == "Ping!") {
-    Serial.println("Pong!");
+  if (command == "Ke") {
+    Serial.println("Re");
     return;
   }
 

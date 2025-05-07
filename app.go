@@ -1,3 +1,5 @@
+//go:build !darwin
+
 package main
 
 import (
@@ -6,6 +8,8 @@ import (
 	"os"
 
 	"fyne.io/systray"
+	_ "github.com/pojntfx/hydrapp/hydrapp/pkg/fixes"
+	"github.com/pojntfx/hydrapp/hydrapp/pkg/ui"
 )
 
 //go:embed icon_offline.ico
@@ -78,4 +82,30 @@ func setStatus(mode string) {
 		statusText = "Desconhecido"
 		fmt.Printf("Status desconhecido: %s\n", mode)
 	}
+}
+
+func app() {
+	defer cancel()
+
+	browserState := &ui.BrowserState{}
+
+	ui.LaunchBrowser(
+		ctx,
+
+		"http://127.0.0.1:8080",
+		"Genius Play",
+		"me.mochly.GeniusPlay",
+
+		os.Getenv(ui.EnvBrowser),
+		os.Getenv(ui.EnvType),
+
+		ui.ChromiumLikeBrowsers,
+		ui.FirefoxLikeBrowsers,
+		ui.EpiphanyLikeBrowsers,
+		ui.LynxLikeBrowsers,
+
+		browserState,
+		ui.ConfigureBrowser,
+	)
+	os.Exit(0)
 }

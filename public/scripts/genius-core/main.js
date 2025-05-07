@@ -98,14 +98,14 @@ async function LoadGame() {
     });
 
     wsManager.on("onButtonPressed", (event) => {
-      console.log(event)
+      console.log(event);
       if (!currentGame) return;
       const buttons = {
-        "1": "right",
-        "2": "left",
-        "3": "reset",
+        1: settings["inverter-toggle"] ? "left" : "right",
+        2: settings["inverter-toggle"] ? "right" : "left",
+        3: "reset",
       };
-      if (buttons[event])currentGame.setSelected(buttons[event]);
+      if (buttons[event]) currentGame.setSelected(buttons[event]);
     });
 
     wsManager.connect();
@@ -126,7 +126,7 @@ async function LoadGame() {
     const loadedQuestionary = await getQuestionaryById(questionary.id);
 
     if (settings["music-toggle"]) {
-      if (loadedQuestionary.music) bgm.src = loadedQuestionary.music;
+      bgm.src = loadedQuestionary.music || await MediaManager.loadMusic() || "/audio/bgm.mp3";
       bgm.volume = parseInt(settings["music-volume"] || 50) / 100;
     } else {
       bgm.volume = 0;
@@ -140,9 +140,11 @@ async function LoadGame() {
       applyTeamColors(settings["team-colors"]);
     }
 
-    if (loadedQuestionary.background) {
-      backgroundElement.style.backgroundImage = `url("${loadedQuestionary.background}")`;
-    }
+    backgroundElement.style.backgroundImage = `url("${
+      loadedQuestionary.background ||
+      (await MediaManager.loadWallpaper()) ||
+      "/img/default.jpg"
+    }")`;
 
     if (!initializeAudio()) {
       document.addEventListener("click", initializeAudio, { once: true });
@@ -181,6 +183,7 @@ function loadHome() {
       "randomize-mode",
       "release-time",
       "intermission-time",
+      "inverter-toggle",
     ],
     defaultSettings: {
       "sound-toggle": true,
@@ -189,7 +192,7 @@ function loadHome() {
       "round-time": "30",
       "team-colors": "#FF0000-#FFA500",
       "hide-score": "during-game",
-      "team-names": false,
+      "team-names": true,
       "team1-name": "Equipe 1",
       "team2-name": "Equipe 2",
       "music-volume": "70",
@@ -199,6 +202,7 @@ function loadHome() {
       "randomize-mode": "both",
       "release-time": "10",
       "intermission-time": "5",
+      "inverter-toggle": false,
     },
   });
 
@@ -464,9 +468,10 @@ function loadHome() {
     inputs.musicVolume?.addEventListener("input", updateBgmVolume);
     inputs.effectsVolume?.addEventListener("input", updateEffectsVolume);
     inputs.teamNames?.addEventListener("change", (e) => {
-      inputs.teamNameInputs.classList.toggle("hidden", !e.target.checked);
+      inputs.teamNameInputs.classList.toggle("hidden", false);
     });
 
+    inputs.teamNameInputs.classList.toggle("hidden", false);
     document.querySelectorAll("button").forEach((btn) => {
       btn.addEventListener("click", () => {
         soundEffects.tabSwitch.play();

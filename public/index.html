@@ -32,17 +32,6 @@
         display: none;
       }
 
-      .fullscreen-img {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: black center/cover no-repeat;
-        z-index: 9999;
-        cursor: pointer;
-      }
-
       .galaxy {
         position: fixed;
         width: 100%;
@@ -50,26 +39,6 @@
         overflow: hidden;
         z-index: 999;
         pointer-events: none;
-      }
-      .twinkle {
-        animation: twinkle 3s infinite ease-in-out;
-        background: white;
-        width: 2px;
-        height: 2px;
-        border-radius: 50%;
-        opacity: 0.3;
-      }
-
-      @keyframes twinkle {
-        0%,
-        100% {
-          opacity: 0.2;
-          transform: scale(1);
-        }
-        50% {
-          opacity: 1;
-          transform: scale(1.5);
-        }
       }
 
       .particle {
@@ -158,6 +127,7 @@
       .slide .slide-img {
         opacity: 0;
       }
+
       .slide.active .slide-img {
         opacity: 1;
       }
@@ -166,54 +136,51 @@
         opacity: 1;
         transform: translateY(0);
       }
+
+      .skip-btn {
+        position: absolute;
+        bottom: 2rem;
+        right: 2rem;
+        background: #9333ea;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 1100;
+        transition: background 0.3s ease;
+      }
+
+      .skip-btn:hover {
+        background: #7e22ce;
+      }
     </style>
   </head>
   <body class="bg-black">
-    <div
-      class="fullscreen-img"
-      id="trollScreen"
-      style="background-image: url('/troll/old.png')"
-    ></div>
-    <video controls id="trollVid" class="hidden">
-      <source src="/troll/trolei.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-    <div class="galaxy text-white flex justify-center align-center items-center" id="galaxy"></div>
+    <div class="galaxy" id="galaxy"></div>
 
     <div class="logo mb-8 hidden" id="logo">
       <h1 class="text-4xl text-white text-center">
         <span class="text-green-400">
           <i class="fa-solid fa-graduation-cap mr-2"></i>
-          <span
-            class="bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 bg-clip-text text-transparent"
-            >Genius</span
-          >
+          <span class="bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 bg-clip-text text-transparent">Genius</span>
         </span>
-        <span
-          class="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent"
-          >Play!</span
-        >
+        <span class="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">Play!</span>
       </h1>
     </div>
-    <div
-      class="slideshow hidden w-full h-full justify-center items-center"
-      id="slideshow"
-    >
-      <div
-        class="slide h-full w-full flex justify-center items-center flex-col gap-4"
-        id="slide"
-      >
+
+    <div class="slideshow hidden w-full h-full justify-center items-center" id="slideshow">
+      <div class="slide h-full w-full flex justify-center items-center flex-col gap-4" id="slide">
         <img id="slideImage" class="slide-img" src="" />
         <p id="slideText" class="slide-text"></p>
       </div>
+      <div class="skip-btn" onclick="endIntro()">Pular</div>
     </div>
 
     <iframe src="main.html" id="gameFrame"></iframe>
     <audio id="introMusic" src="/intro/music.mp3"></audio>
+
     <script>
-      const music = document.getElementById("introMusic");
-      const trollScreen = document.getElementById("trollScreen");
-      const trollVid = document.getElementById("trollVid");
       const galaxy = document.getElementById("galaxy");
       const logo = document.getElementById("logo");
       const slideshow = document.getElementById("slideshow");
@@ -241,48 +208,32 @@
           text: "A experiência de jogo está mais fluida e responsiva em todos os dispositivos. (menos no Macbook do Thiago)",
         },
         {
-          img: "/troll/old.png",
-          text: "E sim, o visual antigo ficou pra trás. A gente evoluiu — sem saudades.",
-        },
-        {
           text: "Seja bem vindo!",
         },
       ];
+
       function messageHim() {
         gameFrame.addEventListener("load", () => {
           gameFrame.contentWindow.postMessage("loaded", "*");
         });
       }
+
       if (localStorage.getItem("introPlayed")) {
-        trollScreen.remove();
         gameFrame.onload = () => {
-          document.getElementById("galaxy").classList.add("m-auto", "w-full", "h-full", "text-center")
-          document.getElementById("galaxy").textContent = "Clique para continuar";
+          galaxy.textContent = "Clique para continuar";
           document.addEventListener("click", () => {
-            document.getElementById("galaxy").remove()
+            galaxy.remove();
             gameFrame.contentWindow.postMessage("loaded", "*");
             messageHim();
             document.querySelector("title").innerText = "Genius Play!";
             gameFrame.style.display = "block";
           });
         };
+      } else {
+        startGalaxy();
       }
 
-      trollScreen.addEventListener("click", () => {
-        document.documentElement.requestFullscreen?.();
-        trollVid.play();
-        trollVid.style.display = "block";
-        trollVid.requestFullscreen?.();
-        trollScreen.remove();
-
-        trollVid.addEventListener("ended", () => {
-          trollVid.remove();
-          startGalaxy();
-        });
-      });
-
       function startGalaxy() {
-        gameFrame.contentWindow.postMessage("loaded", "*");
         const core = document.createElement("div");
         core.style.position = "absolute";
         core.style.left = "50%";
@@ -290,13 +241,8 @@
         core.style.transform = "translate(-50%, -50%)";
         document.body.appendChild(core);
         const colors = [
-          "#FFD700",
-          "#FF69B4",
-          "#ADFF2F",
-          "#00FFFF",
-          "#FF4500",
-          "#B0E0E6",
-          "#BA55D3",
+          "#FFD700", "#FF69B4", "#ADFF2F",
+          "#00FFFF", "#FF4500", "#B0E0E6", "#BA55D3",
         ];
 
         for (let i = 0; i < 300; i++) {
@@ -330,6 +276,7 @@
         logo.classList.add("hidden");
         slideshow.classList.remove("hidden");
         slideshow.classList.add("flex");
+
         let index = 0;
         const slide = document.getElementById("slide");
         const slideImg = document.getElementById("slideImage");
@@ -359,6 +306,7 @@
 
         nextSlide();
       }
+
       function endIntro() {
         localStorage.setItem("introPlayed", "true");
         gameFrame.contentWindow.postMessage("loaded", "*");

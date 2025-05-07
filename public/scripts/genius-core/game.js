@@ -256,13 +256,14 @@ class Game {
     winnerText.textContent =
       winnerEmoji + " " + winnerText.textContent + " " + winnerEmoji;
     this.atualizarScore(true, 0);
-      if (this.scores.left === this.scores.right) {
-        const totalScore = this.scores.left + this.scores.right;
-        const totalPossibleScore = this.quiz.questions.length;
-        const scoreRatio = totalScore / totalPossibleScore;
-      
-        winnerText.textContent = scoreRatio <= 0.5 
-          ? "Empate! Falta estudo..." 
+    if (this.scores.left === this.scores.right) {
+      const totalScore = this.scores.left + this.scores.right;
+      const totalPossibleScore = this.quiz.questions.length;
+      const scoreRatio = totalScore / totalPossibleScore;
+
+      winnerText.textContent =
+        scoreRatio <= 0.5
+          ? "Empate! Falta estudo..."
           : "Empate! Todo mundo arrasou!";
     } else {
       const team =
@@ -339,26 +340,35 @@ class Game {
       this.waiting = false;
 
       if (this.questionTimeout) clearTimeout(this.questionTimeout);
+      this.iniciarTimerBar(999999999999999999999999999999999999999);
       this.setTextoCentro(
         team === "right"
           ? this.settings["team2-name"]
           : this.settings["team1-name"]
       );
-      this.questionTimeout = setTimeout(() => {
-        this.waiting = false;
-        FlashModal.show({
-          text: "Tempo esgotado!",
-          type: "error",
-        });
-        this.showModal(null);
-        setTimeout(async () => {
-          this.nextQuestion();
-          this.iniciarPergunta();
-        }, 3000);
-      }, this.settings["round-time"] * 1000);
-      this.iniciarTimerBar(this.settings["round-time"]);
       this.selectedTeam = team;
       updateTeamSelect(team === "right" ? 2 : 1);
+      FlashModal.teamBuzz(
+        team,
+        team === "right"
+          ? this.settings["team2-name"]
+          : this.settings["team1-name"],
+        this.settings["team-colors"].split("-")[team === "left" ? 1 : 0]
+      ).then(() => {
+        this.questionTimeout = setTimeout(() => {
+          this.waiting = false;
+          FlashModal.show({
+            text: "Tempo esgotado!",
+            type: "error",
+          });
+          this.showModal(null);
+          setTimeout(async () => {
+            this.nextQuestion();
+            this.iniciarPergunta();
+          }, 3000);
+        }, this.settings["round-time"] * 1000);
+        this.iniciarTimerBar(this.settings["round-time"]);
+      });
     }
   }
 
@@ -422,8 +432,7 @@ class Game {
     const elements = pergunta.alternatives.map((alt, i) => {
       const el = createAlternative(alt, pergunta.optionImages?.[i], i);
       el.dataset.id = `option-${i}`;
-      el.onclick = () =>
-        this.verificarResposta(`${alt}`);
+      el.onclick = () => this.verificarResposta(`${alt}`);
       return el;
     });
 

@@ -37,14 +37,14 @@ type QuestionaryInfo struct {
 func readQuestionaries() (map[string]QuestionaryInfo, error) {
 	questionaries := make(map[string]QuestionaryInfo)
 
-	files, err := os.ReadDir("upload")
+	files, err := os.ReadDir(geniusPlayPath)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, file := range files {
 		name := file.Name()
-		path := filepath.Join("upload", name)
+		path := filepath.Join(geniusPlayPath, name)
 
 		if filepath.Ext(name) == ".qn" {
 			q, err := parseOldQuestionFile(path)

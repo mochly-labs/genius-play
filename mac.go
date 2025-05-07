@@ -2,17 +2,21 @@
 
 package main
 
-import (
-	"strings"
-)
+import "os/exec"
 
-func GetVendorID(port string) (uint16, error) {
-	if strings.HasPrefix(port, "/dev/cu.") {
-		return 0x0000, nil
-	}
-	if strings.HasPrefix(port, "/dev/tty.Bluetooth") {
-		return 0x0000, nil
-	}
+var statusText = "Desconhecido"
+var currentMode string
 
-	return 0x1A86, nil
+type dummyMenuItem struct{}
+
+func (d *dummyMenuItem) SetTitle(_ string) {}
+
+var statusItemG = &dummyMenuItem{}
+
+func initTray()              {}
+func onReady(status *string) {}
+func onExit()                {}
+func setStatus(mode string)  {}
+func app() {
+	exec.Command("open", "http://127.0.0.1:8080").Start()
 }

@@ -17,11 +17,6 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.22"
-
-      - name: Install Cross-compilation Tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-multilib libc6-dev-i386 gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
       
       - name: Criar pasta de saída
         run: mkdir -p dist
@@ -64,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Genius-Play-macOS
-          path: dist/*.dmg
+          path: dist/*macOS*
 
   publicar:
     name: Publicar Release
@@ -80,7 +75,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artefatos/**/*.dmg
+            artefatos/**/*macOS*
             artefatos/**/*.exe
             artefatos/**/*Linux*
         env:

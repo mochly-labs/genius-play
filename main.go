@@ -19,9 +19,6 @@ import (
 
 	"context"
 	"os"
-
-	_ "github.com/pojntfx/hydrapp/hydrapp/pkg/fixes"
-	"github.com/pojntfx/hydrapp/hydrapp/pkg/ui"
 )
 
 //go:embed public/*
@@ -49,31 +46,8 @@ var (
 
 var ctx, cancel = context.WithCancel(context.Background())
 
-func app() {
-	defer cancel()
-
-	browserState := &ui.BrowserState{}
-
-	ui.LaunchBrowser(
-		ctx,
-
-		"http://127.0.0.1:8080",
-		"Genius Play",
-		"me.mochly.GeniusPlay",
-
-		os.Getenv(ui.EnvBrowser),
-		os.Getenv(ui.EnvType),
-
-		ui.ChromiumLikeBrowsers,
-		ui.FirefoxLikeBrowsers,
-		ui.EpiphanyLikeBrowsers,
-		ui.LynxLikeBrowsers,
-
-		browserState,
-		ui.ConfigureBrowser,
-	)
-	os.Exit(0)
-}
+var userHome, _ = os.UserHomeDir()
+var geniusPlayPath = filepath.Join(userHome, "GeniusPlay")
 
 func main() {
 	go initTray()
@@ -103,7 +77,7 @@ func main() {
 		c.Next()
 	})
 
-	router.Static("/upload", "./upload")
+	router.Static("/upload", geniusPlayPath)
 	router.GET("/ws", func(c *gin.Context) {
 		conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 		if err != nil {
@@ -160,7 +134,7 @@ func main() {
 			} else if msg["type"] == "upload" {
 				data := fmt.Sprintf("%v", msg["data"])
 				filename := fmt.Sprintf("%x.json", rand.Uint32())
-				fileName := filepath.Join("upload", filename)
+				fileName := filepath.Join(geniusPlayPath, filename)
 
 				file, err := os.Create(fileName)
 				if err != nil {
@@ -187,10 +161,10 @@ func main() {
 				conn.WriteJSON(map[string]interface{}{"type": "togglepin", "success": true})
 			} else if msg["type"] == "delete" {
 				fileName := msg["file"].(string)
-				filePath := filepath.Join("upload", fileName)
+				filePath := filepath.Join(geniusPlayPath, fileName)
 
 				// Ensure the filePath is within the upload directory
-				absUploadDir, err := filepath.Abs("upload")
+				absUploadDir, err := filepath.Abs(geniusPlayPath)
 				if err != nil {
 					log.Println("Erro ao obter caminho absoluto do diretório upload:", err)
 					conn.WriteJSON(map[string]interface{}{"type": "delete", "success": false})
@@ -232,7 +206,7 @@ func main() {
 }
 
 func setupUploadDir() {
-	if err := os.MkdirAll("upload", 0755); err != nil {
+	if err := os.MkdirAll(geniusPlayPath, 0755); err != nil {
 		log.Fatal("Erro ao criar diretório upload:", err)
 	}
 }

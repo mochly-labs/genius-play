@@ -28,61 +28,22 @@ build_for_os() {
     fi
 }
 
-
 build_mac_app_bundle() {
     local arch=$1
     local bin_name="GeniusPlay-macOS-$arch"
-    local app_name="Genius-Play.$arch.app"
-    local app_path="dist/$app_name"
-    local exec_path="$app_path/Contents/MacOS"
-    local res_path="$app_path/Contents/Resources"
 
-    print_message "Building macOS .app bundle for $arch..." "\033[0;33m"
+    print_message "Building macOS binary for $arch..." "\033[0;33m"
 
     # Build binary
-    GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -o "$bin_name"
+    GOOS=darwin GOARCH=$arch CGO_ENABLED=1 go build -o "dist/$bin_name"
 
     if [ $? -ne 0 ]; then
         print_message "Binary build failed for macOS $arch." "\033[0;31m"
         return
     fi
 
-    # Create bundle structure
-    mkdir -p "$exec_path" "$res_path"
-
-    # Move binary into bundle
-    mv "$bin_name" "$exec_path/GeniusPlay"
-
-    # Copy icon (you need to create one!)
-    cp "assets/icon.icns" "$res_path/icon.icns"
-
-    # Create Info.plist
-    cat > "$app_path/Contents/Info.plist" <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
- "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>CFBundleName</key>
-  <string>Genius Play!</string>
-  <key>CFBundleExecutable</key>
-  <string>GeniusPlay</string>
-  <key>CFBundleIconFile</key>
-  <string>icon.icns</string>
-  <key>CFBundleIdentifier</key>
-  <string>me.hiroshi.geniusplay</string>
-  <key>CFBundlePackageType</key>
-  <string>APPL</string>
-  <key>LSUIElement</key>
-  <true/>
-</dict>
-</plist>
-EOF
-
-    create-dmg "dist/Genius-Play-macOS-$arch.dmg" "$app_path" --dmg-title "Genius Play" --volname "Genius Play"
-    print_message ".app bundle created at dist/Genius-Play-macOS-$arch.dmg 🍏✨" "\033[0;32m"
+    print_message "Binary created at dist/$bin_name" "\033[0;32m"
 }
-
 
 # If "maconly" is passed, only build mac targets
 if [ "$1" = "maconly" ]; then
@@ -96,7 +57,7 @@ build_for_os "windows" "amd64" "Genius.Play.x64.exe"
 build_for_os "windows" "386" "Genius.Play.x86.exe"
 # Linux
 build_for_os "linux" "amd64" "Genius.Play.x64.Linux"
-build_for_os "linux" "arm64" "Genius.Play.arm64.Linux"
-build_for_os "linux" "386" "Genius.Play.x86.Linux"
+# build_for_os "linux" "arm64" "Genius.Play.arm64.Linux"
+# build_for_os "linux" "386" "Genius.Play.x86.Linux"
 
 print_message "Build process completed." "\033[0;36m"

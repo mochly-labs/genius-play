@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"sync"
 	"time"
 
 	serial "go.bug.st/serial"
@@ -17,7 +16,6 @@ type ArduinoPairer struct {
 	currentPort serial.Port
 	portAddress string
 	connected   bool
-	connMutex   sync.RWMutex
 }
 
 var lastPing = time.Now()
@@ -87,9 +85,9 @@ func (p *ArduinoPairer) setPin(pin int, enabled bool) {
 	if p.connected {
 		var pinmsg = ""
 		if enabled {
-			pinmsg = "PINON(" + string(pin) + ")"
+			pinmsg = "PINON(" + string(rune(pin)) + ")"
 		} else {
-			pinmsg = "PINOFF(" + string(pin) + ")"
+			pinmsg = "PINOFF(" + string(rune(pin)) + ")"
 
 		}
 		if _, err := p.currentPort.Write([]byte(pinmsg + "\n")); err != nil {
