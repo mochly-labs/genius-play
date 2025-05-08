@@ -152,6 +152,33 @@
                   >
                 </li>
               </ul>
+
+              <div
+                class="mx-auto mt-24 w-fit px-8 py-6 bg-black/20 backdrop-blur-md rounded-md shadow-lg flex items-center justify-center flex-col gap-3"
+              >
+              <p class="font-bold text-white">Calibrador</p>
+                <div class="flex items-center justify-center gap-6">
+                  <!-- Lado Esquerdo -->
+                  <div class="flex flex-col items-center">
+                    <div
+                      id="btn-left"
+                      class="opacity-20 transition-opacity duration-500 w-24 h-24 bg-red-600 flex items-center justify-center text-white text-3xl font-bold active:scale-95 rounded-md"
+                    >
+                      <i class="fas fa-arrow-left"></i>
+                    </div>
+                  </div>
+
+                  <!-- Lado Direito -->
+                  <div class="flex flex-col items-center">
+                    <div
+                      id="btn-right"
+                      class="opacity-20 transition-opacity duration-500 w-24 h-24 bg-blue-600 flex items-center justify-center text-white text-3xl font-bold active:scale-95 rounded-md"
+                    >
+                      <i class="fas fa-arrow-right"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div
@@ -874,6 +901,13 @@
           Questão <span id="intermission_current_question">0</span> de
           <span id="intermission_total_questions">0</span>
         </p>
+        <p
+          class="text-sm text-white rounded-lg mt-2 bg-black/80 backdrop-blur-md px-2 py-1"
+          id="intermission-timer-el"
+        >
+          0s
+        </p>
+
         <div
           id="intermission-timer-container"
           class="timer-container fixed bottom-0 left-0 w-full h-4 shadow-xl bg-black/25 overflow-hidden flex justify-center align-center items-center rounded-lg"
@@ -904,33 +938,42 @@
         </div>
         <h1 class="text-6xl text-white font-bold mb-6 mt-12">Pontuação</h1>
         <div
-          class="scoreboard shadow-xl bg-black/25 p-6 rounded-lg backdrop-blur-xl shadow-lg text-white w-3/4 max-w-2xl flex flex-col gap-3"
+          class="scoreboard-container flex items-center justify-center gap-6 w-full max-w-4xl"
+          id="scoreboard-container"
         >
-          <div class="team-score flex justify-between items-center">
-            <span class="text-2xl font-bold text-red-400" id="team-red-name"
-              >Equipe 1</span
-            >
+          <div
+            class="team-box flex flex-col items-center justify-center bg-black/25 p-6 rounded-lg backdrop-blur-xl shadow-xl text-white w-1/2 gap-2 transition-all duration-500 ease-in-out"
+            id="team-blue-box"
+          >
+            <div id="team-blue-score" class="text-4xl font-bold text-gray-300">
+              0
+            </div>
             <div
-              id="team-red-container"
-              style="position: relative; display: inline-block"
-              class="text-2xl"
+              id="team-blue-name"
+              class="text-xl font-semibold text-blue-400"
             >
-              <span id="team-red-score">0</span>
+              Equipe 2
             </div>
           </div>
-          <div class="team-score flex justify-between items-center">
-            <span class="text-2xl font-bold text-blue-400" id="team-blue-name"
-              >Equipe 2</span
-            >
-            <div
-              id="team-blue-container"
-              style="position: relative; display: inline-block"
-              class="text-2xl"
-            >
-              <span id="team-blue-score">0</span>
+
+          <!-- VS -->
+          <div class="vs text-3xl font-bold text-white select-none" id="vs-box">
+            VS
+          </div>
+
+          <div
+            class="team-box flex flex-col items-center justify-center bg-black/25 p-6 rounded-lg backdrop-blur-xl shadow-xl text-white w-1/2 gap-2 transition-all duration-500 ease-in-out"
+            id="team-red-box"
+          >
+            <div id="team-red-score" class="text-4xl font-bold text-gray-300">
+              0
+            </div>
+            <div id="team-red-name" class="text-xl font-semibold text-red-400">
+              Equipe 1
             </div>
           </div>
         </div>
+
         <h2
           id="winner-text"
           class="text-3xl text-white font-bold mt-8 bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 bg-clip-text text-transparent"
@@ -1043,6 +1086,7 @@
       </div>
     </div>
   </body>
+  <script src="scripts/genius-core/calibrator.js"></script>
   <script src="scripts/genius-core/toasty.js"></script>
   <script src="scripts/genius-core/utils.js"></script>
   <script src="scripts/genius-core/game.js"></script>

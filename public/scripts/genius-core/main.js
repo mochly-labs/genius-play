@@ -568,6 +568,15 @@ function loadHome() {
       quizManager.setQuizzes(quizzes);
     });
 
+    wsManager.on("onButtonPressed", (event) => {
+      const settings = JSON.parse(localStorage.getItem("gameSettings") || "{}");
+      const buttons = {
+        1: settings["inverter-toggle"] ? 2 : 1,
+        2: settings["inverter-toggle"] ? 1 : 2,
+      };
+      if (buttons[event]) ButtonPressCalibrator(buttons[event]);
+    });
+
     wsManager.on("onControllerStatusChanged", (isConnected) => {
       wsManager.updateControllerStatusElement(isConnected);
       hasController = isConnected;
