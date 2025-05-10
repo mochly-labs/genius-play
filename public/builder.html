@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Genius Play! - Editor</title>
+    <script src="/scripts/tailwind.js"></script>
+    <script src="/scripts/sortable.js"></script>
+    <script src="/scripts/genius-core/toasty.js"></script>
+    <link href="icons/css/fontawesome.css" rel="stylesheet" />
+    <link href="icons/css/brands.css" rel="stylesheet" />
+    <link href="icons/css/solid.css" rel="stylesheet" />
+    <style>
+      @font-face {
+        font-family: "Quicksand";
+        src: url("/fonts/Quicksand.ttf") format("truetype");
+        font-weight: bold;
+        font-style: normal;
+      }
+
+      * {
+        font-family: "Quicksand", sans-serif;
+      }
+      .question-item {
+        transition: all 0.2s ease;
+      }
+      .question-item:hover {
+        background-color: rgba(79, 70, 229, 0.1);
+      }
+      .drag-handle {
+        cursor: move;
+      }
+      .file-input {
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+      }
+      .preview-audio {
+        max-width: 300px;
+      }
+      .preview-image {
+        max-height: 150px;
+        max-width: 300px;
+        object-fit: contain;
+      }
+      .option-image-preview {
+        max-height: 80px;
+        max-width: 150px;
+        object-fit: contain;
+      }
+      .question-image-preview {
+        max-height: 120px;
+        max-width: 250px;
+        object-fit: contain;
+      }
+      .tab-button {
+        transition: all 0.2s ease;
+      }
+      .tab-button.active {
+        background-color: rgba(79, 70, 229, 0.2);
+        border-color: rgb(79, 70, 229);
+      }
+    </style>
+  </head>
+  <body class="text-gray-200 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+      <header class="mb-8">
+        <h1 class="text-xl font-bold text-indigo-400 mb-2 text-center">
+          Editor
+        </h1>
+        <p class="text-gray-400 text-center">Versão: Alpha 2.0.3</p>
+      </header>
+
+      <div class="bg-black/80 rounded-lg shadow-lg p-6 mb-6">
+        <div class="flex flex-col sm:flex-row gap-4 mb-6">
+          <div class="flex-1">
+            <label
+              for="quizTitle"
+              class="block text-sm font-medium text-gray-300 mb-1"
+              >Nome do Questionário</label
+            >
+            <input
+              type="text"
+              id="quizTitle"
+              placeholder="Digite o nome do questionário"
+              class="w-full bg-black/30 border border-gray-600 rounded-md px-4 py-2 text-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+          <div class="flex items-end gap-2">
+            <button
+              id="importBtn"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
+            >
+              <i class="fas fa-file-import"></i> Importar (.qn)
+            </button>
+            <button
+              id="importBtn2"
+              class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
+            >
+              <i class="fas fa-file-import"></i> Importar (.json novo)
+            </button>
+            <button
+              id="exportBtn"
+              class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
+            >
+              <i class="fas fa-file-export"></i> Exportar (JSON)
+            </button>
+            <input type="file" id="fileInput" class="file-input" accept=".qn" />
+            <input type="file" id="fileInput2" class="file-input" accept=".json" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1"
+              >Background</label
+            >
+            <div class="flex items-center gap-2">
+              <label
+                for="bgUpload"
+                class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
+              >
+                <i class="fas fa-image"></i> Upload
+                <input
+                  type="file"
+                  id="bgUpload"
+                  class="file-input"
+                  accept="image/*"
+                />
+              </label>
+              <button
+                id="clearBgBtn"
+                class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div id="bgPreviewContainer" class="mt-2 hidden">
+              <img
+                id="bgPreview"
+                class="preview-image rounded-md border border-gray-600"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-1"
+              >Música</label
+            >
+            <div class="flex items-center gap-2">
+              <label
+                for="musicUpload"
+                class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md flex items-center gap-2"
+              >
+                <i class="fas fa-music"></i> Upload
+                <input
+                  type="file"
+                  id="musicUpload"
+                  class="file-input"
+                  accept="audio/*"
+                />
+              </label>
+              <button
+                id="clearMusicBtn"
+                class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md"
+              >
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <div id="musicPreviewContainer" class="mt-2 hidden">
+              <audio
+                id="musicPreview"
+                controls
+                class="preview-audio w-full"
+              ></audio>
+            </div>
+          </div>
+        </div>
+
+        <div id="questionsContainer" class="space-y-4">
+          <!-- Questions will be added here -->
+        </div>
+
+        <button
+          id="addQuestionBtn"
+          class="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-md flex items-center justify-center gap-2"
+        >
+          <i class="fas fa-plus"></i> Adicionar Pergunta
+        </button>
+      </div>
+
+      <div
+        class="bg-black/80 rounded-lg shadow-lg p-6 hidden"
+        id="previewSection"
+      >
+        <h2 class="text-xl font-semibold text-indigo-400 mb-4">
+          Pré-visualização do JSON
+        </h2>
+        <pre
+          id="filePreview"
+          class="bg-gray-900 p-4 rounded-md overflow-x-auto text-gray-300 text-sm max-h-96 overflow-y-auto"
+        ></pre>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const quizTitle = document.getElementById("quizTitle");
+        const questionsContainer =
+          document.getElementById("questionsContainer");
+        const addQuestionBtn = document.getElementById("addQuestionBtn");
+        const importBtn = document.getElementById("importBtn");
+        const importBtn2 = document.getElementById("importBtn2");
+        const exportBtn = document.getElementById("exportBtn");
+        const fileInput = document.getElementById("fileInput");
+        const fileInput2 = document.getElementById("fileInput2");
+        const previewSection = document.getElementById("previewSection");
+        const filePreview = document.getElementById("filePreview");
+
+        // Media upload elements
+        const bgUpload = document.getElementById("bgUpload");
+        const musicUpload = document.getElementById("musicUpload");
+        const bgPreview = document.getElementById("bgPreview");
+        const bgPreviewContainer =
+          document.getElementById("bgPreviewContainer");
+        const musicPreview = document.getElementById("musicPreview");
+        const musicPreviewContainer = document.getElementById(
+          "musicPreviewContainer"
+        );
+        const clearBgBtn = document.getElementById("clearBgBtn");
+        const clearMusicBtn = document.getElementById("clearMusicBtn");
+
+        let backgroundBase64 = null;
+        let musicBase64 = null;
+
+        // Initialize SortableJS for drag and drop
+        new Sortable(questionsContainer, {
+          handle: ".drag-handle",
+          animation: 150,
+          ghostClass: "bg-indigo-900",
+        });
+
+        // Add new question
+        addQuestionBtn.addEventListener("click", function () {
+          addNewQuestion();
+        });
+
+        // Import .qn file
+        importBtn.addEventListener("click", function () {
+          fileInput.click();
+        });
+        importBtn2.addEventListener("click", function () {
+          fileInput2.click();
+        });
+
+        fileInput.addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              parseQNFile(e.target.result);
+            };
+            reader.readAsText(file);
+          }
+        });
+        fileInput2.addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              parseJSONFile(e.target.result);
+            };
+            reader.readAsText(file);
+          }
+        });
+
+        // Export JSON file
+        exportBtn.addEventListener("click", function () {
+          exportJSONFile();
+        });
+
+        // Background upload
+        bgUpload.addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              backgroundBase64 = e.target.result;
+              bgPreview.src = backgroundBase64;
+              bgPreviewContainer.classList.remove("hidden");
+              updatePreview();
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        // Music upload
+        musicUpload.addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              musicBase64 = e.target.result;
+              musicPreview.src = musicBase64;
+              musicPreviewContainer.classList.remove("hidden");
+              updatePreview();
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+        // Clear background
+        clearBgBtn.addEventListener("click", function () {
+          backgroundBase64 = null;
+          bgPreview.src = "";
+          bgPreviewContainer.classList.add("hidden");
+          bgUpload.value = "";
+          updatePreview();
+        });
+
+        // Clear music
+        clearMusicBtn.addEventListener("click", function () {
+          musicBase64 = null;
+          musicPreview.src = "";
+          musicPreviewContainer.classList.add("hidden");
+          musicUpload.value = "";
+          updatePreview();
+        });
+
+        function addNewQuestion(questionData) {
+          const questionId = Date.now();
+          const questionItem = document.createElement("div");
+          questionItem.className =
+            "question-item bg-black/30 rounded-lg p-4 border border-gray-600";
+          questionItem.dataset.id = questionId;
+
+          // Default options if none provided
+          const defaultOptions = questionData?.alternatives
+            ? questionData.alternatives.map((alt, i) => ({
+                letter: String.fromCharCode(97 + i), // a, b, c, etc.
+                text: alt,
+                correct: alt === questionData.correct,
+                image: questionData.optionImages
+                  ? questionData.optionImages[i]
+                  : null,
+              }))
+            : [
+                { letter: "a", text: "", correct: false, image: null },
+                { letter: "b", text: "", correct: false, image: null },
+              ];
+
+          questionItem.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <div class="drag-handle pt-3 text-gray-400 hover:text-indigo-400">
+                            <i class="fas fa-grip-vertical"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="mb-4">
+                                <div class="flex gap-2 mb-1">
+                                    <button class="tab-button text-xs px-3 py-1 border rounded-md active" data-tab="text">Texto</button>
+                                    <button class="tab-button text-xs px-3 py-1 border rounded-md" data-tab="image">Imagem</button>
+                                </div>
+                                <div class="tab-content text-tab">
+                                    <input type="text" class="question-input w-full bg-gray-600 border border-gray-500 rounded-md px-3 py-2 text-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                                           placeholder="Digite a pergunta" value="${
+                                             questionData?.question || ""
+                                           }">
+                                </div>
+                                <div class="tab-content image-tab hidden">
+                                    <div class="flex items-center gap-2">
+                                        <label for="question-image-${questionId}" class="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md flex items-center gap-1 text-sm">
+                                            <i class="fas fa-image"></i> Upload
+                                            <input type="file" id="question-image-${questionId}" class="file-input question-image-input" accept="image/*">
+                                        </label>
+                                        <button class="clear-question-image-btn bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded-md text-sm">
+                                            <i class="fas fa-times"></i> Limpar
+                                        </button>
+                                    </div>
+                                    <div class="question-image-preview-container mt-2 ${
+                                      questionData?.questionImage
+                                        ? ""
+                                        : "hidden"
+                                    }">
+                                        <img class="question-image-preview rounded-md border border-gray-600" ${
+                                          questionData?.questionImage
+                                            ? `src="${questionData.questionImage}"`
+                                            : ""
+                                        }>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label class="block text-sm font-medium text-gray-300 mb-1">Pontos</label>
+                                <input type="number" class="worth-input w-full bg-gray-600 border border-gray-500 rounded-md px-3 py-2 text-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                                       placeholder="Pontos" min="1" value="${
+                                         questionData?.worth || 1
+                                       }">
+                            </div>
+                            <div id="options-${questionId}" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                ${defaultOptions
+                                  .map(
+                                    (opt) => `
+                                    <div class="option-item ${
+                                      opt.correct ? "option-correct" : ""
+                                    }" data-letter="${opt.letter}">
+                                        <div class="flex flex-col gap-2">
+                                            <div class="flex items-center">
+                                                <button class="correct-btn mr-2 w-6 h-6 flex items-center justify-center rounded-full border ${
+                                                  opt.correct
+                                                    ? "bg-indigo-600 border-indigo-600"
+                                                    : "bg-gray-600 border-gray-500"
+                                                }">
+                                                    ${
+                                                      opt.correct
+                                                        ? '<i class="fas fa-check text-white text-xs"></i>'
+                                                        : ""
+                                                    }
+                                                </button>
+                                                <input type="text" class="option-input w-full bg-gray-600 border border-gray-500 rounded-md px-3 py-2 text-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                                                       placeholder="Opção ${opt.letter.toUpperCase()}" value="${
+                                      opt.text
+                                    }">
+                                                <button class="delete-option-btn ml-2 text-gray-400 hover:text-red-400">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                            <div class="flex items-center gap-2 pl-8">
+                                                <label for="option-image-${questionId}-${
+                                      opt.letter
+                                    }" class="cursor-pointer bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded-md flex items-center gap-1 text-xs">
+                                                    <i class="fas fa-image"></i> Imagem
+                                                    <input type="file" id="option-image-${questionId}-${
+                                      opt.letter
+                                    }" class="file-input option-image-input" accept="image/*">
+                                                </label>
+                                                <button class="clear-option-image-btn bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded-md text-xs ${
+                                                  opt.image ? "" : "hidden"
+                                                }">
+                                                    <i class="fas fa-times"></i> Limpar
+                                                </button>
+                                            </div>
+                                            <div class="option-image-preview-container pl-8 ${
+                                              opt.image ? "" : "hidden"
+                                            }">
+                                                <img class="option-image-preview rounded-md border border-gray-600" ${
+                                                  opt.image
+                                                    ? `src="${opt.image}"`
+                                                    : ""
+                                                }>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `
+                                  )
+                                  .join("")}
+                            </div>
+                            <button class="add-option-btn text-sm bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md flex items-center gap-1">
+                                <i class="fas fa-plus text-xs"></i> Adicionar Alternativa
+                            </button>
+                        </div>
+                        <button class="delete-btn mt-1 text-gray-400 hover:text-red-400">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+
+          questionsContainer.appendChild(questionItem);
+
+          // Set question image if provided
+          if (questionData?.questionImage) {
+            const previewContainer = questionItem.querySelector(
+              ".question-image-preview-container"
+            );
+            const previewImg = questionItem.querySelector(
+              ".question-image-preview"
+            );
+            previewContainer.classList.remove("hidden");
+            previewImg.src = questionData.questionImage;
+          }
+
+          // Tab switching for question input
+          const tabButtons = questionItem.querySelectorAll(".tab-button");
+          const tabContents = questionItem.querySelectorAll(".tab-content");
+
+          tabButtons.forEach((button) => {
+            button.addEventListener("click", function () {
+              const tab = this.dataset.tab;
+
+              // Update active state
+              tabButtons.forEach((btn) => btn.classList.remove("active"));
+              this.classList.add("active");
+
+              // Show/hide content
+              tabContents.forEach((content) => {
+                if (content.classList.contains(`${tab}-tab`)) {
+                  content.classList.remove("hidden");
+                } else {
+                  content.classList.add("hidden");
+                }
+              });
+            });
+          });
+
+          // Question image upload
+          const questionImageInput = questionItem.querySelector(
+            ".question-image-input"
+          );
+          const clearQuestionImageBtn = questionItem.querySelector(
+            ".clear-question-image-btn"
+          );
+          const questionImagePreviewContainer = questionItem.querySelector(
+            ".question-image-preview-container"
+          );
+          const questionImagePreview = questionItem.querySelector(
+            ".question-image-preview"
+          );
+
+          questionImageInput.addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                questionImagePreview.src = e.target.result;
+                questionImagePreviewContainer.classList.remove("hidden");
+                updatePreview();
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+
+          clearQuestionImageBtn.addEventListener("click", function () {
+            questionImagePreview.src = "";
+            questionImagePreviewContainer.classList.add("hidden");
+            questionImageInput.value = "";
+            updatePreview();
+          });
+
+          // Add event listeners for the new question
+          const deleteBtn = questionItem.querySelector(".delete-btn");
+          deleteBtn.addEventListener("click", function () {
+            questionItem.remove();
+            updatePreview();
+          });
+
+          const addOptionBtn = questionItem.querySelector(".add-option-btn");
+          addOptionBtn.addEventListener("click", function () {
+            const optionsContainer = questionItem.querySelector(
+              `#options-${questionId}`
+            );
+            const existingOptions =
+              optionsContainer.querySelectorAll(".option-item");
+            const nextLetter = String.fromCharCode(97 + existingOptions.length);
+
+            const newOption = document.createElement("div");
+            newOption.className = "option-item";
+            newOption.dataset.letter = nextLetter;
+            newOption.innerHTML = `
+                        <div class="flex flex-col gap-2">
+                            <div class="flex items-center">
+                                <button class="correct-btn mr-2 w-6 h-6 flex items-center justify-center rounded-full border bg-gray-600 border-gray-500"></button>
+                                <input type="text" class="option-input w-full bg-gray-600 border border-gray-500 rounded-md px-3 py-2 text-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                                       placeholder="Opção ${nextLetter.toUpperCase()}">
+                                <button class="delete-option-btn ml-2 text-gray-400 hover:text-red-400">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-2 pl-8">
+                                <label for="option-image-${questionId}-${nextLetter}" class="cursor-pointer bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded-md flex items-center gap-1 text-xs">
+                                    <i class="fas fa-image"></i> Imagem
+                                    <input type="file" id="option-image-${questionId}-${nextLetter}" class="file-input option-image-input" accept="image/*">
+                                </label>
+                                <button class="clear-option-image-btn bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded-md text-xs hidden">
+                                    <i class="fas fa-times"></i> Limpar
+                                </button>
+                            </div>
+                            <div class="option-image-preview-container pl-8 hidden">
+                                <img class="option-image-preview rounded-md border border-gray-600">
+                            </div>
+                        </div>
+                    `;
+
+            optionsContainer.appendChild(newOption);
+
+            // Show delete buttons on all options if we now have more than 2
+            if (existingOptions.length + 1 > 2) {
+              optionsContainer
+                .querySelectorAll(".delete-option-btn")
+                .forEach((btn) => {
+                  btn.classList.remove("hidden");
+                });
+            }
+
+            // Add event listeners for the new option
+            const correctBtn = newOption.querySelector(".correct-btn");
+            correctBtn.addEventListener("click", function () {
+              markOptionAsCorrect(newOption);
+            });
+
+            const deleteOptionBtn =
+              newOption.querySelector(".delete-option-btn");
+            deleteOptionBtn.addEventListener("click", function () {
+              newOption.remove();
+              updatePreview();
+            });
+
+            const optionInput = newOption.querySelector(".option-input");
+            optionInput.addEventListener("input", updatePreview);
+
+            // Option image upload
+            const optionImageInput = newOption.querySelector(
+              ".option-image-input"
+            );
+            const clearOptionImageBtn = newOption.querySelector(
+              ".clear-option-image-btn"
+            );
+            const optionImagePreviewContainer = newOption.querySelector(
+              ".option-image-preview-container"
+            );
+            const optionImagePreview = newOption.querySelector(
+              ".option-image-preview"
+            );
+
+            optionImageInput.addEventListener("change", function (e) {
+              const file = e.target.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                  optionImagePreview.src = e.target.result;
+                  optionImagePreviewContainer.classList.remove("hidden");
+                  clearOptionImageBtn.classList.remove("hidden");
+                  updatePreview();
+                };
+                reader.readAsDataURL(file);
+              }
+            });
+
+            clearOptionImageBtn.addEventListener("click", function () {
+              optionImagePreview.src = "";
+              optionImagePreviewContainer.classList.add("hidden");
+              optionImageInput.value = "";
+              clearOptionImageBtn.classList.add("hidden");
+              updatePreview();
+            });
+
+            updatePreview();
+          });
+
+          // Add event listeners for existing options
+          const correctBtns = questionItem.querySelectorAll(".correct-btn");
+          correctBtns.forEach((btn) => {
+            btn.addEventListener("click", function () {
+              const optionItem = btn.closest(".option-item");
+              markOptionAsCorrect(optionItem);
+            });
+          });
+
+          const deleteOptionBtns =
+            questionItem.querySelectorAll(".delete-option-btn");
+          deleteOptionBtns.forEach((btn) => {
+            btn.addEventListener("click", function () {
+              const optionItem = btn.closest(".option-item");
+              optionItem.remove();
+              updatePreview();
+            });
+          });
+
+          // Option image upload for existing options
+          questionItem
+            .querySelectorAll(".option-image-input")
+            .forEach((input) => {
+              input.addEventListener("change", function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                  const optionItem = this.closest(".option-item");
+                  const previewContainer = optionItem.querySelector(
+                    ".option-image-preview-container"
+                  );
+                  const previewImg = optionItem.querySelector(
+                    ".option-image-preview"
+                  );
+                  const clearBtn = optionItem.querySelector(
+                    ".clear-option-image-btn"
+                  );
+
+                  const reader = new FileReader();
+                  reader.onload = function (e) {
+                    previewImg.src = e.target.result;
+                    previewContainer.classList.remove("hidden");
+                    clearBtn.classList.remove("hidden");
+                    updatePreview();
+                  };
+                  reader.readAsDataURL(file);
+                }
+              });
+            });
+
+          // Clear option image for existing options
+          questionItem
+            .querySelectorAll(".clear-option-image-btn")
+            .forEach((btn) => {
+              btn.addEventListener("click", function () {
+                const optionItem = this.closest(".option-item");
+                const previewContainer = optionItem.querySelector(
+                  ".option-image-preview-container"
+                );
+                const previewImg = optionItem.querySelector(
+                  ".option-image-preview"
+                );
+                const input = optionItem.querySelector(".option-image-input");
+
+                previewImg.src = "";
+                previewContainer.classList.add("hidden");
+                input.value = "";
+                this.classList.add("hidden");
+                updatePreview();
+              });
+            });
+
+          // Update preview when inputs change
+          const inputs = questionItem.querySelectorAll("input");
+          inputs.forEach((input) => {
+            if (!input.classList.contains("file-input")) {
+              input.addEventListener("input", updatePreview);
+            }
+          });
+
+          updatePreview();
+        }
+
+        function markOptionAsCorrect(optionItem) {
+          const questionItem = optionItem.closest(".question-item");
+
+          // Remove all correct marks first
+          questionItem.querySelectorAll(".option-item").forEach((item) => {
+            item.classList.remove("option-correct");
+            const btn = item.querySelector(".correct-btn");
+            btn.className =
+              "correct-btn mr-2 w-6 h-6 flex items-center justify-center rounded-full border bg-gray-600 border-gray-500";
+            btn.innerHTML = "";
+          });
+
+          // Mark the selected one as correct
+          optionItem.classList.add("option-correct");
+          const btn = optionItem.querySelector(".correct-btn");
+          btn.className =
+            "correct-btn mr-2 w-6 h-6 flex items-center justify-center rounded-full bg-indigo-600";
+          btn.innerHTML = '<i class="fas fa-check text-white text-xs"></i>';
+
+          updatePreview();
+        }
+
+        function parseJSONFile(content) {
+          try {
+            const quizData = JSON.parse(content);
+
+            if (!quizData.title || !Array.isArray(quizData.questions)) {
+              throw new Error(
+                "Formato inválido. Certifique-se de que o arquivo contém um título e uma lista de perguntas."
+              );
+            }
+
+            // Set quiz title
+            quizTitle.value = quizData.title;
+
+            // Set background and music if available
+            if (quizData.background) {
+              backgroundBase64 = quizData.background;
+              bgPreview.src = backgroundBase64;
+              bgPreviewContainer.classList.remove("hidden");
+            }
+
+            if (quizData.music) {
+              musicBase64 = quizData.music;
+              musicPreview.src = musicBase64;
+              musicPreviewContainer.classList.remove("hidden");
+            }
+
+            // Clear existing questions
+            questionsContainer.innerHTML = "";
+
+            // Add questions
+            quizData.questions.forEach((question) => {
+              addNewQuestion({
+                question: question.question,
+                questionImage: question.questionImage,
+                alternatives: question.alternatives,
+                optionImages: question.optionImages,
+                correct: question.correct,
+                worth: question.worth,
+              });
+            });
+
+            updatePreview();
+          } catch (error) {
+            Toasty.show(
+              "Erro ao importar o arquivo JSON. Verifique o formato e tente novamente."
+            );
+            console.error(error);
+          }
+        }
+
+        function parseQNFile(content) {
+          try {
+            const lines = content
+              .split("\n")
+              .filter((line) => line.trim() !== "");
+
+            if (lines.length === 0) return;
+
+            // First line is the quiz title
+            const titleLine = lines[0];
+            if (titleLine.startsWith("#")) {
+              quizTitle.value = titleLine.substring(1).trim();
+            }
+
+            // Clear existing questions
+            questionsContainer.innerHTML = "";
+
+            // Parse questions
+            for (let i = 1; i < lines.length; i++) {
+              const line = lines[i];
+              if (!line.includes("%")) continue;
+
+              const parts = line.split("%").map((part) => part.trim());
+              if (parts.length < 2) continue;
+
+              const questionText = parts[0];
+              const alternatives = [];
+              let correctOption = null;
+
+              for (let j = 1; j < parts.length; j++) {
+                const optionText = parts[j];
+                if (optionText.startsWith("*")) {
+                  correctOption = optionText.substring(1).trim();
+                  alternatives.push(correctOption);
+                } else {
+                  alternatives.push(optionText.trim());
+                }
+              }
+
+              addNewQuestion({
+                question: questionText,
+                alternatives: alternatives,
+                correct: correctOption,
+                worth: 10,
+              });
+            }
+
+            updatePreview();
+          } catch (error) {
+            Toasty.show(
+              "Erro ao importar o arquivo. Verifique o formato e tente novamente."
+            );
+            console.error(error);
+          }
+        }
+
+        function exportJSONFile() {
+          if (!quizTitle.value.trim()) {
+            Toasty.show("Por favor, insira um nome para o questionário.");
+            return;
+          }
+
+          const questions = Array.from(
+            questionsContainer.querySelectorAll(".question-item")
+          );
+          if (questions.length === 0) {
+            Toasty.show("Adicione pelo menos uma pergunta antes de exportar.");
+            return;
+          }
+
+          // Validate all questions have at least 2 options and one correct
+          let isValid = true;
+          questions.forEach((question) => {
+            const options = question.querySelectorAll(".option-item");
+            if (options.length < 2) {
+              isValid = false;
+              return;
+            }
+
+            const hasCorrect = Array.from(options).some((opt) =>
+              opt.classList.contains("option-correct")
+            );
+            if (!hasCorrect) {
+              isValid = false;
+              return;
+            }
+          });
+
+          if (!isValid) {
+            Toasty.show(
+              "Cada pergunta deve ter pelo menos 2 alternativas e uma resposta correta."
+            );
+            return;
+          }
+
+          const quizData = {
+            title: quizTitle.value.trim(),
+            background: backgroundBase64,
+            music: musicBase64,
+            questions: [],
+          };
+
+          questions.forEach((question) => {
+            const questionInput = question.querySelector(".question-input");
+            const worthInput = question.querySelector(".worth-input");
+            const questionText = questionInput
+              ? questionInput.value.trim()
+              : "";
+
+            // Check if question is using image
+            const questionImageTab = question.querySelector(".image-tab");
+            const questionImagePreview = question.querySelector(
+              ".question-image-preview"
+            );
+            const questionImage =
+              questionImageTab &&
+              !questionImageTab.classList.contains("hidden") &&
+              questionImagePreview.src
+                ? questionImagePreview.src
+                : null;
+
+            if (!questionText && !questionImage) return;
+
+            const alternatives = [];
+            const optionImages = [];
+            let correct = null;
+            const options = question.querySelectorAll(".option-item");
+
+            options.forEach((option) => {
+              const input = option.querySelector(".option-input");
+              const optionText = input ? input.value.trim() : "";
+
+              // Check if option has image
+              const optionImagePreview = option.querySelector(
+                ".option-image-preview"
+              );
+              const optionImage =
+                optionImagePreview && optionImagePreview.src
+                  ? optionImagePreview.src
+                  : null;
+
+              if (optionText || optionImage) {
+                alternatives.push(optionText || "");
+                optionImages.push(optionImage);
+
+                if (option.classList.contains("option-correct")) {
+                  correct = optionText || "";
+                }
+              }
+            });
+
+            if (alternatives.length >= 2 && correct !== null) {
+              quizData.questions.push({
+                question: questionText,
+                questionImage: questionImage,
+                alternatives: alternatives,
+                optionImages: optionImages,
+                correct: correct,
+                worth: parseInt(worthInput.value) || 10,
+              });
+            }
+          });
+
+          if (quizData.questions.length === 0) {
+            Toasty.show(
+              "Nenhuma pergunta válida encontrada. Verifique se todas têm texto/imagem e pelo menos 2 alternativas com uma correta."
+            );
+            return;
+          }
+
+          // Update preview
+          filePreview.textContent = JSON.stringify(quizData, null, 2);
+          previewSection.classList.remove("hidden");
+
+          // Create download link
+          const blob = new Blob([JSON.stringify(quizData, null, 2)], {
+            type: "application/json",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${quizTitle.value.trim().replace(/\s+/g, "_")}.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+
+        function updatePreview() {
+          if (
+            !quizTitle.value.trim() &&
+            questionsContainer.children.length === 0 &&
+            !backgroundBase64 &&
+            !musicBase64
+          ) {
+            previewSection.classList.add("hidden");
+            return;
+          }
+
+          const quizData = {
+            title: quizTitle.value.trim(),
+            background: backgroundBase64 ? "[base64 image data]" : null,
+            music: musicBase64 ? "[base64 audio data]" : null,
+            questions: [],
+          };
+
+          const questions = Array.from(
+            questionsContainer.querySelectorAll(".question-item")
+          );
+          questions.forEach((question) => {
+            const questionInput = question.querySelector(".question-input");
+            const worthInput = question.querySelector(".worth-input");
+            const questionText = questionInput
+              ? questionInput.value.trim()
+              : "";
+
+            // Check if question is using image
+            const questionImageTab = question.querySelector(".image-tab");
+            const questionImagePreview = question.querySelector(
+              ".question-image-preview"
+            );
+            const questionImage =
+              questionImageTab &&
+              !questionImageTab.classList.contains("hidden") &&
+              questionImagePreview.src
+                ? "[base64 image data]"
+                : null;
+
+            if (!questionText && !questionImage) return;
+
+            const alternatives = [];
+            const optionImages = [];
+            let correct = null;
+            const options = question.querySelectorAll(".option-item");
+
+            options.forEach((option) => {
+              const input = option.querySelector(".option-input");
+              const optionText = input ? input.value.trim() : "";
+
+              // Check if option has image
+              const optionImagePreview = option.querySelector(
+                ".option-image-preview"
+              );
+              const optionImage =
+                optionImagePreview && optionImagePreview.src
+                  ? "[base64 image data]"
+                  : null;
+
+              if (optionText || optionImage) {
+                alternatives.push(optionText || "");
+                optionImages.push(optionImage);
+
+                if (option.classList.contains("option-correct")) {
+                  correct = optionText || "";
+                }
+              }
+            });
+
+            if (alternatives.length >= 2 && correct !== null) {
+              quizData.questions.push({
+                question: questionText,
+                questionImage: questionImage,
+                alternatives: alternatives,
+                optionImages: optionImages,
+                correct: correct,
+                worth: parseInt(worthInput.value) || 10,
+              });
+            }
+          });
+
+          filePreview.textContent = JSON.stringify(quizData, null, 2);
+          previewSection.classList.remove("hidden");
+        }
+
+        // Add initial question
+        addNewQuestion();
+      });
+    </script>
+  </body>
+</html>

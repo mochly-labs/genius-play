@@ -1,0 +1,82 @@
+name: Compilar
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*' 
+
+jobs:
+  compilar-linux-windows:
+    name: Compilar Linux e Windows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      
+      - name: Criar pasta de saída
+        run: mkdir -p dist
+
+      - name: Executar script de build
+        run: |
+          chmod +x ./build.sh
+          ./build.sh
+
+      - name: Enviar binários como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: Genius-Play-Linux-Windows
+          path: dist/*
+  compilar-macos:
+    name: Compilar macOS
+    runs-on: macos-latest
+
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar dependências
+        run: |
+          brew install create-dmg
+
+      - name: Configurar Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Criar pasta de saída
+        run: mkdir -p dist
+
+      - name: Executar build para macOS
+        run: |
+          chmod +x ./build.sh
+          ./build.sh maconly
+      - name: Enviar .dmg como artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: Genius-Play-macOS
+          path: dist/*macOS*
+
+  publicar:
+    name: Publicar Release
+    needs: [compilar-linux-windows, compilar-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar todos os artefatos
+        uses: actions/download-artifact@v4
+        with:
+          path: artefatos
+
+      - name: Criar Release no GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artefatos/**/*macOS*
+            artefatos/**/*.exe
+            artefatos/**/*Linux*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

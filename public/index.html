@@ -1,0 +1,322 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>🌟 Loading your adventure...</title>
+    <link href="icons/css/fontawesome.css" rel="stylesheet" />
+    <link href="icons/css/brands.css" rel="stylesheet" />
+    <link href="icons/css/solid.css" rel="stylesheet" />
+    <script src="/scripts/tailwind.js"></script>
+    <link href="icons/favicon.png" rel="icon" type="image/png" />
+    <style>
+      @font-face {
+        font-family: "Quicksand";
+        src: url("/fonts/Quicksand.ttf") format("truetype");
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: black;
+        font-family: "Quicksand", sans-serif;
+        overflow: hidden;
+      }
+
+      #gameFrame {
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: none;
+      }
+
+      .galaxy {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 999;
+        pointer-events: none;
+      }
+
+      .particle {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: white;
+        border-radius: 50%;
+        opacity: 0.7;
+        animation: shoot 2s ease-out forwards;
+      }
+
+      @keyframes shoot {
+        0% {
+          transform: translate(0, 0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(var(--x), var(--y)) scale(0.5);
+          opacity: 0;
+        }
+      }
+
+      .logo {
+        z-index: 1000;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        animation: fadeIn 1s ease 0.5s forwards;
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+
+      .fade-out {
+        animation: fadeOut 2s ease forwards !important;
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0 !important;
+        }
+      }
+
+      .slideshow {
+        z-index: 1000;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: black;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-align: center;
+        font-size: 1.5rem;
+      }
+
+      .slide-img {
+        max-width: 80%;
+        max-height: auto;
+        height: auto;
+        margin: 10px;
+        min-width: 80%;
+        border-radius: 1rem;
+        transition: opacity 0.7s ease;
+      }
+
+      .slide-text {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 1s ease, transform 1s ease;
+      }
+
+      .slide .slide-img {
+        opacity: 0;
+      }
+
+      .slide.active .slide-img {
+        opacity: 1;
+      }
+
+      .slide.active .slide-text {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .skip-btn {
+        position: absolute;
+        bottom: 2rem;
+        right: 2rem;
+        background: #9333ea;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 1100;
+        transition: background 0.3s ease;
+      }
+
+      .skip-btn:hover {
+        background: #7e22ce;
+      }
+    </style>
+  </head>
+  <body class="bg-black">
+    <div class="galaxy" id="galaxy"></div>
+
+    <div class="logo mb-8 hidden" id="logo">
+      <h1 class="text-4xl text-white text-center">
+        <span class="text-green-400">
+          <i class="fa-solid fa-graduation-cap mr-2"></i>
+          <span class="bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 bg-clip-text text-transparent">Genius</span>
+        </span>
+        <span class="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">Play!</span>
+      </h1>
+    </div>
+
+    <div class="slideshow hidden w-full h-full justify-center items-center" id="slideshow">
+      <div class="slide h-full w-full flex justify-center items-center flex-col gap-4" id="slide">
+        <img id="slideImage" class="slide-img" src="" />
+        <p id="slideText" class="slide-text"></p>
+      </div>
+      <div class="skip-btn" onclick="endIntro()">Pular</div>
+    </div>
+
+    <iframe src="main.html" id="gameFrame"></iframe>
+    <audio id="introMusic" src="/intro/music.mp3"></audio>
+
+    <script>
+      const galaxy = document.getElementById("galaxy");
+      const logo = document.getElementById("logo");
+      const slideshow = document.getElementById("slideshow");
+      const gameFrame = document.getElementById("gameFrame");
+
+      const slides = [
+        {
+          img: "/intro/1.png",
+          text: "Apresentamos o novo visual: mais limpo, moderno e agradável de usar.",
+        },
+        {
+          img: "/intro/2.png",
+          text: "O Gerenciador de Quizzes foi reformulado para tornar tudo mais organizado.",
+        },
+        {
+          img: "/intro/3.png",
+          text: "Agora é possível montar perguntas com mais praticidade. (com suporte a imagens!)",
+        },
+        {
+          img: "/intro/4.png",
+          text: "As configurações estão mais intuitivas e fáceis de acessar.",
+        },
+        {
+          img: "/intro/5.png",
+          text: "A experiência de jogo está mais fluida e responsiva em todos os dispositivos. (menos no Macbook do Thiago)",
+        },
+        {
+          text: "Seja bem vindo!",
+        },
+      ];
+
+      function messageHim() {
+        gameFrame.addEventListener("load", () => {
+          gameFrame.contentWindow.postMessage("loaded", "*");
+        });
+      }
+
+      if (localStorage.getItem("introPlayed")) {
+        gameFrame.onload = () => {
+          galaxy.textContent = "Clique para continuar";
+          document.addEventListener("click", () => {
+            galaxy.remove();
+            gameFrame.contentWindow.postMessage("loaded", "*");
+            messageHim();
+            document.querySelector("title").innerText = "Genius Play!";
+            gameFrame.style.display = "block";
+          });
+        };
+      } else {
+        startGalaxy();
+      }
+
+      function startGalaxy() {
+        const core = document.createElement("div");
+        core.style.position = "absolute";
+        core.style.left = "50%";
+        core.style.top = "50%";
+        core.style.transform = "translate(-50%, -50%)";
+        document.body.appendChild(core);
+        const colors = [
+          "#FFD700", "#FF69B4", "#ADFF2F",
+          "#00FFFF", "#FF4500", "#B0E0E6", "#BA55D3",
+        ];
+
+        for (let i = 0; i < 300; i++) {
+          const star = document.createElement("div");
+          star.className = "particle chaos";
+          const size = Math.random() * 3 + 1;
+          star.style.width = `${size}px`;
+          star.style.height = `${size}px`;
+
+          const angle = Math.random() * 2 * Math.PI;
+          const radius = Math.random() * window.innerWidth * 0.8;
+
+          star.style.position = "absolute";
+          star.style.left = `${Math.cos(angle) * radius}px`;
+          star.style.top = `${Math.sin(angle) * radius}px`;
+
+          star.style.backgroundColor =
+            colors[Math.floor(Math.random() * colors.length)];
+
+          core.appendChild(star);
+        }
+
+        logo.classList.remove("hidden");
+        setTimeout(() => {
+          logo.classList.add("fade-out");
+          setTimeout(startSlideshow, 2000);
+        }, 3000);
+      }
+
+      function startSlideshow() {
+        logo.classList.add("hidden");
+        slideshow.classList.remove("hidden");
+        slideshow.classList.add("flex");
+
+        let index = 0;
+        const slide = document.getElementById("slide");
+        const slideImg = document.getElementById("slideImage");
+        const slideText = document.getElementById("slideText");
+
+        function nextSlide() {
+          if (index >= slides.length) {
+            setTimeout(endIntro, 2700);
+            return;
+          }
+
+          const { img, text } = slides[index];
+          slide.classList.remove("active");
+
+          setTimeout(() => {
+            slideImg.classList.remove("hidden");
+
+            if (!img) slideImg.classList.add("hidden");
+            else slideImg.src = img;
+
+            slideText.innerText = text;
+            slide.classList.add("active");
+            index++;
+            setTimeout(nextSlide, 3000);
+          }, 1000);
+        }
+
+        nextSlide();
+      }
+
+      function endIntro() {
+        localStorage.setItem("introPlayed", "true");
+        gameFrame.contentWindow.postMessage("loaded", "*");
+        messageHim();
+        document.querySelector("title").innerText = "Genius Play!";
+        slideshow.remove();
+        galaxy.remove();
+        logo.remove();
+        gameFrame.style.display = "block";
+      }
+    </script>
+  </body>
+</html>

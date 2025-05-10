@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Genius Play</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="scripts/tailwind.js"></script>
+    <script src="scripts/sweetalert.js"></script>
+    <script src="scripts/confetti.min.js"></script>
+    <link href="icons/css/fontawesome.css" rel="stylesheet" />
+    <link href="icons/css/brands.css" rel="stylesheet" />
+    <link href="icons/css/solid.css" rel="stylesheet" />
+    <link href="css/sweetalert.css" rel="stylesheet" />
+    <link href="icons/favicon.png" rel="icon" type="image/png" />
+  </head>
+  <body class="h-screen w-full shadow-xl bg-black">
+    <div
+      class="loading-screen fixed inset-0 shadow-xl bg-black backdrop-blur-xl flex flex-col items-center justify-center"
+      id="loading-screen"
+    >
+      <div class="logo mb-8">
+        <h1 class="text-4xl text-white">
+          <span class="text-green-400">
+            <i class="fa-solid fa-graduation-cap mr-2"></i>
+            <span
+              class="bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 bg-clip-text text-transparent"
+              >Genius</span
+            >
+          </span>
+          <span
+            class="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent"
+            >Play!</span
+          >
+        </h1>
+      </div>
+      <h2 class="text-2xl text-white mb-4 hidden" id="loading-text">
+        Carregando Quiz: <span id="questionary-name">Desconhecido</span>
+      </h2>
+      <div class="loading-circle mt-8">
+        <div
+          class="spinner-border animate-spin inline-block w-12 h-12 border-4 rounded-full"
+          style="
+            border: 4px solid transparent;
+            border-top-color: rgba(34, 197, 94, 1);
+            border-right-color: rgba(59, 130, 246, 1);
+            border-bottom-color: rgba(234, 179, 8, 1);
+            border-left-color: rgba(239, 68, 68, 1);
+            animation: spin 1.5s ease-in-out infinite;
+          "
+        ></div>
+      </div>
+      <div
+        style="z-index: -5"
+        class="shadow-xl bg-black blue-md fixed inset-0 flex items-center justify-center"
+      >
+        <canvas id="particles-canvas" class="absolute inset-0 blur-xl"></canvas>
+      </div>
+    </div>
+    <div
+      class="small-device-message xl:hidden fixed inset-0 shadow-xl bg-black/70 flex items-center justify-center backdrop-blur-xl"
+      style="z-index: 1061"
+    >
+      <div class="text-center text-white">
+        <h2 class="text-2xl font-bold mb-4">Dispositivo não suportado</h2>
+        <p class="text-lg">
+          Este jogo não é otimizado para dispositivos com telas pequenas.
+        </p>
+        <p class="text-lg">
+          Por favor, utilize um dispositivo com uma tela maior.
+        </p>
+      </div>
+    </div>
+    <div id="home-content" class="h-full w-full">
+      <script src="scripts/particles.js"></script>
+      <div class="app min-h-full h-full w-full bg-transparent" id="game">
+        <div
+          class="game-bg w-full h-full min-h-full fixed top-0 bottom-0 blur-md"
+          style="margin: 0; padding: 0"
+        ></div>
+        <div class="before-game max-w-full w-full h-full p-2 flex gap-5">
+          <div
+            class="content max-w-4/5 w-4/5 h-full shadow-xl bg-black/40 rounded-md p-4 text-white"
+          >
+            <div
+              class="status-section flex flex-col items-center justify-center h-full text-center sect"
+              id="status-section"
+            >
+              <h2
+                class="text-2xl font-bold mb-6 shadow-xl bg-black/25 backdrop-blur-md text-white p-2 rounded-md px-4"
+              >
+                <span id="time-of-day"></span>
+                <script>
+                  const today = new Date();
+                  const hour = today.getHours();
+                  let timeOfDay = "";
+                  if (hour < 12) {
+                    timeOfDay = "Bom dia";
+                  } else if (hour < 18) {
+                    timeOfDay = "Boa tarde";
+                  } else {
+                    timeOfDay = "Boa noite";
+                  }
+                  document.getElementById(
+                    "time-of-day"
+                  ).innerHTML = `${timeOfDay}, <span id="username-goodmorning">Convidado</span>!`;
+                </script>
+              </h2>
+              <ul class="space-y-4 w-3/4">
+                <li
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-wifi mr-2 text-green-400"></i
+                    >Conectado ao WebSocket:
+                  </span>
+                  <span class="text-red-400 font-bold" id="websocket-connected"
+                    >Não</span
+                  >
+                </li>
+                <li
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-id-badge mr-2 text-blue-400"></i>UUID
+                    do Socket:
+                  </span>
+                  <span class="text-yellow-400 font-bold" id="my-uuid"
+                    >Desconhecido</span
+                  >
+                </li>
+                <li
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-gamepad mr-2 text-purple-400"></i
+                    >Controlador Conectado:
+                  </span>
+                  <span class="text-red-400 font-bold" id="controller-connected"
+                    >Não</span
+                  >
+                </li>
+                <li
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-code-branch mr-2 text-yellow-400"></i
+                    >Versão:
+                  </span>
+                  <span class="text-yellow-400 font-bold" id="game-version"
+                    >Alpha v2.0.3</span
+                  >
+                </li>
+              </ul>
+
+              <div
+                class="mx-auto mt-24 w-fit px-8 py-6 bg-black/20 backdrop-blur-md rounded-md shadow-lg flex items-center justify-center flex-col gap-3"
+              >
+              <p class="font-bold text-white">Calibrador</p>
+                <div class="flex items-center justify-center gap-6">
+                  <!-- Lado Esquerdo -->
+                  <div class="flex flex-col items-center">
+                    <div
+                      id="btn-left"
+                      class="opacity-20 transition-opacity duration-500 w-24 h-24 bg-red-600 flex items-center justify-center text-white text-3xl font-bold active:scale-95 rounded-md"
+                    >
+                      <i class="fas fa-arrow-left"></i>
+                    </div>
+                  </div>
+
+                  <!-- Lado Direito -->
+                  <div class="flex flex-col items-center">
+                    <div
+                      id="btn-right"
+                      class="opacity-20 transition-opacity duration-500 w-24 h-24 bg-blue-600 flex items-center justify-center text-white text-3xl font-bold active:scale-95 rounded-md"
+                    >
+                      <i class="fas fa-arrow-right"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="config-section flex flex-col items-center justify-center h-full text-center sect hidden"
+              id="config-section"
+            >
+              <h2
+                class="text-2xl font-bold mb-6 shadow-xl bg-black/25 backdrop-blur-md p-2 rounded-md px-4 animate-gradient"
+              >
+                <i class="fa-solid fa-cogs mr-2"></i>Configurações
+              </h2>
+              <div class="space-y-4 w-3/4 h-3/4 overflow-y-auto py-2 px-4">
+                <!-- General Settings -->
+                <h3 class="text-lg font-bold text-white mb-2">
+                  Configurações Gerais
+                </h3>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-volume-high mr-2 text-pink-400"></i
+                    >Som:
+                  </span>
+                  <label class="switch">
+                    <input type="checkbox" id="sound-toggle" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-music mr-2 text-emerald-400"></i
+                    >Música:
+                  </span>
+                  <label class="switch">
+                    <input type="checkbox" id="music-toggle" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-bell mr-2 text-orange-400"></i>Efeitos
+                    Sonoros:
+                  </span>
+                  <label class="switch">
+                    <input type="checkbox" id="sound-effects-toggle" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-volume-high mr-2 text-indigo-400"></i
+                    >Volume da Música:
+                  </span>
+                  <input
+                    type="range"
+                    id="music-volume"
+                    class="w-1/2"
+                    min="0"
+                    max="100"
+                    value="70"
+                  />
+                </div>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-volume-off mr-2 text-teal-400"></i
+                    >Volume dos Efeitos:
+                  </span>
+                  <input
+                    type="range"
+                    id="effects-volume"
+                    class="w-1/2"
+                    min="0"
+                    max="100"
+                    value="50"
+                  />
+                </div>
+
+                <!-- Player Information -->
+                <h3 class="text-lg font-bold text-white mt-6 mb-2">
+                  Informações do Jogador
+                </h3>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-id-card mr-2 text-cyan-400"></i>UUID:
+                  </span>
+                  <span
+                    id="player-uuid"
+                    class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-2 w-1/2 text-center"
+                  >
+                    Não cadastrado
+                  </span>
+                </div>
+
+                <!-- Game Settings -->
+                <h3 class="text-lg font-bold text-white mt-6 mb-2">
+                  Configurações do Jogo
+                </h3>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-clock mr-2 text-rose-400"></i>Tempo
+                    por Rodada:
+                  </span>
+                  <input
+                    type="number"
+                    id="round-time"
+                    class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-2 w-1/4"
+                    min="10"
+                    max="300"
+                    value="60"
+                  />
+                </div>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-clock mr-2 text-lime-400"></i>Tempo da
+                    Intermissão:
+                  </span>
+                  <input
+                    type="number"
+                    id="intermission-time"
+                    class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-2 w-1/4"
+                    min="10"
+                    max="300"
+                    value="5"
+                  />
+                </div>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-clock mr-2 text-fuchsia-400"></i>Tempo
+                    da Liberação (antes de liberar os botões):
+                  </span>
+                  <input
+                    type="number"
+                    id="release-time"
+                    class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-2 w-1/4"
+                    min="10"
+                    max="300"
+                    value="10"
+                  />
+                </div>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-palette mr-2 text-green-400"></i>Cores
+                    dos Times:
+                  </span>
+                  <select
+                    id="team-colors"
+                    class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-2 w-1/2"
+                  >
+                    <option value="#FF0000-#FFA500" selected>
+                      Vermelho e Laranja
+                    </option>
+                    <option value="#00FF00-#FFFF00">Verde e Amarelo</option>
+                    <option value="#0000FF-#800080">Azul e Roxo</option>
+                    <option value="#FF1493-#00FFFF">Rosa e Ciano</option>
+                    <option value="#808080-#FFFFFF">Cinza e Branco</option>
+                    <option value="#FF4500-#FFD700">Laranja e Dourado</option>
+                    <option value="#32CD32-#ADFF2F">
+                      Verde Lima e Verde Claro
+                    </option>
+                    <option value="#1E90FF-#00BFFF">
+                      Azul Céu e Azul Claro
+                    </option>
+                    <option value="#FF69B4-#FFB6C1">
+                      Rosa Choque e Rosa Claro
+                    </option>
+                    <option value="#8A2BE2-#9400D3">
+                      Violeta e Roxo Escuro
+                    </option>
+                    <option value="#FF6347-#FF4500">
+                      Tomate e Laranja Forte
+                    </option>
+                    <option value="#7FFF00-#00FA9A">
+                      Verde Chartreuse(ki diacho é isso?) e Verde Médio
+                    </option>
+                    <option value="#00CED1-#4682B4">
+                      Turquesa Escuro e Azul Aço
+                    </option>
+                    <option value="#FFD700-#FF8C00">
+                      Dourado e Laranja Escuro
+                    </option>
+                    <option value="#DC143C-#FF0000">Carmesim e Vermelho</option>
+                    <option value="#00FF7F-#3CB371">
+                      Verde Primavera e Verde Mar
+                    </option>
+                    <option value="#6A5ACD-#483D8B">
+                      Azul Ardósia e Azul Escuro
+                    </option>
+                    <option value="#FF00FF-#BA55D3">
+                      Magenta e Orquídea Média
+                    </option>
+                    <option value="#FF7F50-#FF4500">
+                      Coral e Laranja Forte
+                    </option>
+                    <option value="#40E0D0-#20B2AA">
+                      Turquesa e Verde Água
+                    </option>
+                    <option value="#FF1493-#FF69B4">
+                      Rosa Profundo e Rosa Choque
+                    </option>
+                    <option value="#8B0000-#B22222">
+                      Vermelho Escuro e Tijolo
+                    </option>
+                    <option value="#00BFFF-#1E90FF">
+                      Azul Claro e Azul Céu
+                    </option>
+                    <option value="#ADFF2F-#7FFF00">
+                      Verde Claro e Verde Chartreuse
+                    </option>
+                  </select>
+                </div>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-eye-slash mr-2 text-[#9B59B6]"></i
+                    >Esconder o Placar:
+                  </span>
+                  <select
+                    id="hide-score"
+                    class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-2 w-1/2"
+                  >
+                    <option value="none">Sem placar</option>
+                    <option value="during-game">Durante o jogo</option>
+                    <option value="never">Não esconder</option>
+                  </select>
+                </div>
+
+                <!-- Team Settings -->
+                <h3 class="text-lg font-bold text-white mt-6 mb-2">
+                  Configurações dos Times
+                </h3>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md hidden"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-users mr-2 text-[#E67E22]"></i>Nome
+                    dos Times:
+                  </span>
+                  <label class="switch">
+                    <input type="checkbox" id="team-names" checked />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div id="team-name-inputs" class="hidden space-y-4">
+                  <div
+                    class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                  >
+                    <span class="font-semibold text-white">
+                      <i class="fa-solid fa-users text-[#3498DB] mr-2"></i>Nome
+                      do Time 1:
+                    </span>
+                    <input
+                      type="text"
+                      id="team1-name"
+                      class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-2 w-1/2"
+                      placeholder="Digite o nome do Time 1"
+                    />
+                  </div>
+                  <div
+                    class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                  >
+                    <span class="font-semibold text-white">
+                      <i class="fa-solid fa-users text-[#2ECC71] mr-2"></i>Nome
+                      do Time 2:
+                    </span>
+                    <input
+                      type="text"
+                      id="team2-name"
+                      class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-2 w-1/2"
+                      placeholder="Digite o nome do Time 2"
+                    />
+                  </div>
+                </div>
+
+                <!-- Visual Settings -->
+                <h3 class="text-lg font-bold text-white mt-6 mb-2">
+                  Configurações Visuais
+                </h3>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-image mr-2 text-[#F1C40F]"></i>Fundo
+                    da Home (e fallback):
+                  </span>
+                  <div class="file-upload-wrapper">
+                    <label
+                      for="game-background"
+                      class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-3 w-full cursor-pointer flex items-center justify-center hover:bg-black/60 transition"
+                    >
+                      <i class="fa-solid fa-upload mr-2"></i>Escolher Imagem
+                    </label>
+                    <input
+                      type="file"
+                      id="game-background"
+                      class="hidden"
+                      accept="image/*"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-music mr-2 text-[#E74C3C]"></i>Música
+                    da Home (e fallback):
+                  </span>
+                  <div class="file-upload-wrapper">
+                    <label
+                      for="game-music"
+                      class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-3 w-full cursor-pointer flex items-center justify-center hover:bg-black/60 transition"
+                    >
+                      <i class="fa-solid fa-upload mr-2"></i>Escolher Música
+                    </label>
+                    <input
+                      type="file"
+                      id="game-music"
+                      class="hidden"
+                      accept="audio/*"
+                    />
+                  </div>
+                </div>
+
+                <!-- Advanced Settings -->
+                <h3 class="text-lg font-bold text-white mt-6 mb-2">
+                  Configurações Avançadas
+                </h3>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-cake-candles mr-2 text-[#FF6B6B]"></i
+                    >Confetti:
+                  </span>
+                  <label class="switch">
+                    <input type="checkbox" id="confetti-toggle" />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div
+                  <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-rotate mr-2 text-[#4ECDC4]"></i
+                    >Inverter botões:
+                  </span>
+                  <label class="switch">
+                    <input type="checkbox" id="inverter-toggle" />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-question mr-2 text-[#FFD93D]"></i>Modo
+                    de Questão Errada:
+                  </span>
+                  <select
+                    id="wrong-question-mode"
+                    class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-2 w-1/2"
+                  >
+                    <option value="skip">Pular</option>
+                    <option value="pass">Repassar</option>
+                    <option value="retry">Tentar novamente</option>
+                  </select>
+                </div>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-random mr-2 text-[#95E1D3]"></i
+                    >Randomizar:
+                  </span>
+                  <select
+                    id="randomize-mode"
+                    class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-2 w-1/2"
+                  >
+                    <option value="alternatives-only">
+                      Alternativas Somente
+                    </option>
+                    <option value="questions-only">Questões Somente</option>
+                    <option value="none">Não Randomizar</option>
+                    <option value="both">Questões e Alternativas</option>
+                  </select>
+                </div>
+
+                <!-- Fixed Information -->
+                <h3 class="text-lg font-bold text-white mt-6 mb-2">
+                  Informações
+                </h3>
+                <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg shadow-md"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-info-circle mr-2 text-[#A8E6CF]"></i
+                    >Versão do Jogo:
+                  </span>
+                  <span class="text-yellow-400 font-bold">Alpha 2.0.3</span>
+                </div>
+
+                <!-- Actions -->
+                <h3 class="text-lg font-bold text-white mt-6 mb-2">Ações</h3>
+                <div class="flex justify-between gap-4">
+                  <button
+                    class="clear-data-btn text-white font-semibold py-3 px-4 rounded-xl w-full border-2 shadow-xl bg-black/30 backdrop-blur-md border-rose-500 hover:bg-rose-600/80 hover:border-rose-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                    onclick="clearGameData()"
+                  >
+                    <i class="fa-solid fa-trash mr-2 text-rose-200"></i>Limpar
+                    Dados
+                  </button>
+
+                  <button
+                    class="reload-btn text-white font-semibold py-3 px-4 rounded-xl w-full border-2 shadow-xl bg-black/30 backdrop-blur-md border-sky-500 hover:bg-sky-600/80 hover:border-sky-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                    onclick="reloadGame()"
+                  >
+                    <i class="fa-solid fa-rotate-right mr-2 text-sky-200"></i
+                    >Recarregar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="builder-section flex flex-col items-center justify-center h-full text-center sect hidden"
+              id="builder-section"
+            >
+              <object
+                data="builder.html"
+                style="
+                  max-width: 100%;
+                  max-height: 100%;
+                  height: 100%;
+                  width: 100%;
+                  border-radius: 10px;
+                "
+              ></object>
+            </div>
+
+            <div
+              class="file-uploader-section flex flex-col items-center justify-center h-full text-center sect hidden"
+              id="file-uploader-section"
+            >
+              <h2
+                class="text-2xl font-bold mb-6 shadow-xl bg-black/25 backdrop-blur-md p-2 rounded-md px-4"
+              >
+                <i class="fa-solid fa-brain mr-2"></i>Gerenciador de
+                Questionários
+              </h2>
+              <div
+                class="search-upload-wrapper flex items-center justify-between w-3/4 mb-6"
+              >
+                <input
+                  type="text"
+                  id="search-input"
+                  class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-3 w-full"
+                  placeholder="Pesquisar questionários..."
+                />
+                <label
+                  for="file-input"
+                  class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-4 cursor-pointer flex items-center justify-center hover:bg-black/60 transition ml-4"
+                >
+                  <i class="fa-solid fa-upload"></i>
+                </label>
+                <input
+                  type="file"
+                  id="file-input"
+                  class="hidden"
+                  accept=".json"
+                />
+                <button
+                  class="shadow-xl bg-black/25 backdrop-blur-md text-white rounded-md p-4 cursor-pointer flex items-center justify-center hover:bg-black/60 transition ml-4 refresh-btn"
+                  id="refresh-button"
+                >
+                  <i class="fa-solid fa-refresh"></i>
+                </button>
+              </div>
+              <div
+                id="quiz-list"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-3/4 overflow-y-auto"
+                style="max-height: 60vh"
+              ></div>
+            </div>
+          </div>
+          <div
+            class="sidebar xl:max-w-2/5 xl:w-2/5 2xl:max-w-1/5 2xl:w-1/5 h-full shadow-xl bg-black/40 rounded-md h-full"
+          >
+            <div
+              class="content-header flex justify-center items-center p-4 py-8 relative h-full"
+            >
+              <div class="w-full h-full px-4 flex flex-col justify-between">
+                <div
+                  class="flex items-center justify-center mx-auto relative mt-6"
+                  id="title-logo"
+                >
+                  <h1
+                    class="text-4xl font-extrabold text-center drop-shadow-xl"
+                  >
+                    <span class="inline-flex items-center gap-3">
+                      <i
+                        class="fa-solid fa-graduation-cap text-4xl text-emerald-500"
+                      ></i>
+                      <span
+                        class="bg-gradient-to-r from-emerald-500 via-yellow-600 to-orange-600 bg-clip-text text-transparent"
+                      >
+                        Genius
+                      </span>
+                    </span>
+                    <span
+                      class="ml-0.5 bg-gradient-to-r from-purple-700 via-indigo-600 to-blue-600 bg-clip-text text-transparent"
+                    >
+                      Play!
+                    </span>
+                  </h1>
+                </div>
+
+                <div class="menu flex flex-col gap-4 mt-12 w-full max-w-md">
+                  <button
+                    class="home-btn glassy-button text-white font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-2xl bg-black/20 backdrop-blur-xl border-sky-500 hover:bg-sky-600/80 hover:border-sky-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                  >
+                    <i class="fa-solid fa-house mr-3 text-sky-300"></i>Página
+                    Inicial
+                  </button>
+
+                  <button
+                    class="uploader-btn glassy-button text-white font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-2xl bg-black/20 backdrop-blur-xl border-indigo-500 hover:bg-indigo-600/80 hover:border-indigo-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                  >
+                    <i class="fa-solid fa-brain mr-3 text-indigo-300"></i
+                    >Questionários
+                  </button>
+
+                  <button
+                    class="builder-btn glassy-button text-white font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-2xl bg-black/20 backdrop-blur-xl border-purple-500 hover:bg-purple-600/80 hover:border-purple-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                  >
+                    <i class="fa-solid fa-wrench mr-3 text-purple-300"></i
+                    >Editor
+                  </button>
+
+                  <button
+                    class="store-btn glassy-button text-gray-300 font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-md bg-black/30 backdrop-blur-xl border-gray-500 cursor-not-allowed opacity-50 hidden"
+                    disabled
+                  >
+                    <i class="fa-solid fa-users mr-3 text-gray-400"></i
+                    >Comunidade (em breve)
+                  </button>
+
+                  <button
+                    class="addons-btn glassy-button text-gray-300 font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-md bg-black/30 backdrop-blur-xl border-gray-500 cursor-not-allowed opacity-50 hidden"
+                    disabled
+                  >
+                    <i class="fa-solid fa-puzzle-piece mr-3 text-gray-400"></i
+                    >Complementos (em breve)
+                  </button>
+
+                  <button
+                    class="settings-btn glassy-button text-white font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-2xl bg-black/20 backdrop-blur-xl border-teal-500 hover:bg-teal-600/80 hover:border-teal-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                  >
+                    <i class="fa-solid fa-sliders mr-3 text-teal-300"></i
+                    >Preferências
+                  </button>
+
+                  <button
+                    class="quit-btn glassy-button text-white font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-2xl bg-black/20 backdrop-blur-xl border-rose-500 hover:bg-rose-600/80 hover:border-rose-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                  >
+                    <i class="fa-solid fa-power-off mr-3 text-rose-300"></i
+                    >Encerrar
+                  </button>
+                </div>
+
+                <div class="absolute bottom-24 left-0 w-full px-8 hidden">
+                  <div
+                    class="user-container p-4 shadow-xl bg-black/25 backdrop-blur-md rounded-md w-full"
+                  >
+                    <div class="user-profile flex items-center gap-4">
+                      <div
+                        class="profile-picture w-12 h-12 rounded-full bg-gray-500 flex items-center justify-center"
+                      >
+                        <i class="fa-solid fa-user text-white text-xl"></i>
+                      </div>
+                      <div class="profile-info text-white">
+                        <h3 class="text-lg font-bold">Convidado</h3>
+                        <p class="text-xs text-gray-400">
+                          Sem permissões - Não logado
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="copyright text-center text-white text-sm backdrop-blur-xl shadow-xl bg-black/25 py-4 shadow-inner rounded-b-md w-full rounded-md"
+                >
+                  <p class="mb-2">
+                    <a
+                      href="https://github.com/mochly-labs"
+                      target="_blank"
+                      class="text-blue-400 hover:text-blue-300 transition-colors duration-150"
+                    >
+                      <i class="fa-brands fa-github mr-1"></i>mochly-labs
+                    </a>
+                    <span class="mx-2 text-white/50">|</span>
+                    <a
+                      href="https://github.com/mochly-labs/genius-play"
+                      target="_blank"
+                      class="text-blue-400 hover:text-blue-300 transition-colors duration-150"
+                    >
+                      <i class="fa-brands fa-github mr-1"></i>genius-play
+                    </a>
+                  </p>
+                  <p>
+                    <i class="fa-solid fa-code-branch mr-1 text-green-300"></i>
+                    Licença MIT - Mantido por
+                    <a
+                      href="https://github.com/nekowy"
+                      target="_blank"
+                      class="text-yellow-400 hover:text-yellow-300 transition-colors duration-150"
+                    >
+                      nekowy
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ingame" class="h-full w-full flex items-center justify-center">
+      <div
+        class="ingame-bg w-full h-full min-h-full fixed top-0 bottom-0 blur-md opacity-80"
+        style="margin: 0; padding: 0"
+      ></div>
+      <div
+        class="watermark bg-gradient-to-r bg-clip-text text-transparent from-green-400 via-yellow-400 to-red-400 text-center fixed top-12 left-12 flex flex-col items-center justify-center text-2xl opacity-60"
+        style="z-index: 100000"
+      >
+        <span
+          >Genius Play!
+          <span
+            class="inline bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500"
+            >Alpha</span
+          ></span
+        >
+      </div>
+      <div
+        class="flex flex-col items-center justify-center p-24 shadow-xl bg-black/25 backdrop-blur-xl rounded-lg"
+        id="start-screen"
+      >
+        <button
+          class="absolute top-8 left-8 text-white cursor-pointer"
+          onclick="document.querySelector('#ingame').remove(); document.querySelector('#loading-screen').style.display = '';document.querySelector('#loading-screen').style.opacity = '1'; localStorage.removeItem('InGame'); location.reload();"
+        >
+          <i class="fa-solid fa-arrow-left text-2xl"></i>
+        </button>
+        <div class="logo mb-8">
+          <h1 class="text-4xl text-white">
+            <span class="text-green-400">
+              <i class="fa-solid fa-graduation-cap mr-2"></i>
+              <span
+                class="bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 bg-clip-text text-transparent"
+                >Genius</span
+              >
+            </span>
+            <span
+              class="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent"
+              >Play!</span
+            >
+          </h1>
+        </div>
+
+        <h2 class="text-2xl text-white">
+          Quiz:
+          <span class="text-blue-300" id="gp_game_title_element"
+            >Desconhecido</span
+          >
+        </h2>
+        <button
+          class="text-white font-bold py-3 px-8 rounded-full bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 shadow-lg hover:scale-125 hover:shadow-2xl transition-transform duration-300 ease-in-out mt-16 active:scale-90"
+          style="box-shadow: 0 0 20px rgba(255, 255, 255, 0.5)"
+          id="start-btn"
+        >
+          <i class="fa-solid fa-play mr-2"></i> Iniciar
+        </button>
+      </div>
+      <!-- Loading/Intermission Screen -->
+      <div
+        id="intermission-screen"
+        class="fixed inset-0 shadow-xl bg-black/70 flex flex-col items-center justify-center hidden"
+      >
+        <h1 class="text-4xl text-white font-bold mb-4">
+          <i class="fa-solid fa-hourglass-half mr-2"></i>Intermissão
+        </h1>
+        <p class="text-lg text-white mt-4 mb-1">
+          Prepare-se para a próxima rodada!
+        </p>
+        <p class="text-md text-white mb-24">
+          Coloque sua mão na orelha e relaxe!
+        </p>
+        <!-- Current Question Market -->
+        <p class="text-md text-white">
+          Questão <span id="intermission_current_question">0</span> de
+          <span id="intermission_total_questions">0</span>
+        </p>
+        <p
+          class="text-sm text-white rounded-lg mt-2 bg-black/80 backdrop-blur-md px-2 py-1"
+          id="intermission-timer-el"
+        >
+          0s
+        </p>
+
+        <div
+          id="intermission-timer-container"
+          class="timer-container fixed bottom-0 left-0 w-full h-4 shadow-xl bg-black/25 overflow-hidden flex justify-center align-center items-center rounded-lg"
+        >
+          <div
+            id="intermission-timer-progress"
+            class="h-full rounded-lg"
+            style="
+              background: linear-gradient(
+                to right,
+                var(--team-red-color),
+                var(--team-blue-color)
+              );
+              width: 100%;
+              transition: width 5s linear;
+            "
+          ></div>
+        </div>
+      </div>
+
+      <!-- Score/Winner Screen -->
+      <div
+        id="score-screen"
+        class="fixed inset-0 shadow-xl bg-black/80 flex flex-col items-center hidden justify-center"
+      >
+        <div id="score-win-img">
+          <img src="/img/win.png" class="w-auto h-20" />
+        </div>
+        <h1 class="text-6xl text-white font-bold mb-6 mt-12">Pontuação</h1>
+        <div
+          class="scoreboard-container flex items-center justify-center gap-6 w-full max-w-4xl"
+          id="scoreboard-container"
+        >
+          <div
+            class="team-box flex flex-col items-center justify-center bg-black/25 p-6 rounded-lg backdrop-blur-xl shadow-xl text-white w-1/2 gap-2 transition-all duration-500 ease-in-out"
+            id="team-blue-box"
+          >
+            <div id="team-blue-score" class="text-4xl font-bold text-gray-300">
+              0
+            </div>
+            <div
+              id="team-blue-name"
+              class="text-xl font-semibold text-blue-400"
+            >
+              Equipe 2
+            </div>
+          </div>
+
+          <!-- VS -->
+          <div class="vs text-3xl font-bold text-white select-none" id="vs-box">
+            VS
+          </div>
+
+          <div
+            class="team-box flex flex-col items-center justify-center bg-black/25 p-6 rounded-lg backdrop-blur-xl shadow-xl text-white w-1/2 gap-2 transition-all duration-500 ease-in-out"
+            id="team-red-box"
+          >
+            <div id="team-red-score" class="text-4xl font-bold text-gray-300">
+              0
+            </div>
+            <div id="team-red-name" class="text-xl font-semibold text-red-400">
+              Equipe 1
+            </div>
+          </div>
+        </div>
+
+        <h2
+          id="winner-text"
+          class="text-3xl text-white font-bold mt-8 bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 bg-clip-text text-transparent"
+        >
+          Parabéns por chegarem até aqui!
+        </h2>
+        <div class="mt-8 flex gap-8 hidden" id="winner-buttons">
+          <button
+            class="text-white font-bold py-3 px-8 rounded-full bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 shadow-lg hover:scale-110 transition-transform duration-300"
+            onclick="window.location.reload()"
+          >
+            <i class="fa-solid fa-rotate-right mr-2"></i>Reiniciar Jogo
+          </button>
+          <button
+            class="text-white font-bold py-3 px-8 rounded-full bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 shadow-lg hover:scale-110 transition-transform duration-300"
+            onclick="localStorage.removeItem('InGame'); location.reload();"
+          >
+            <i class="fa-solid fa-house mr-2"></i>Voltar à Página Inicial
+          </button>
+        </div>
+      </div>
+      <div
+        class="question-container flex flex-col items-center justify-center p-8 shadow-xl bg-black/25 backdrop-blur-md rounded-lg w-full h-full hidden"
+        id="question-screen"
+      >
+        <div class="w-full h-full flex flex-col justify-center align-center">
+          <div id="question-image-container" class="mb-6">
+            <img
+              id="question-image"
+              src="/img/placeholder.webp"
+              alt="Imagem da Pergunta"
+              class="max-w-full max-h-64 rounded-lg"
+            />
+          </div>
+          <h2
+            id="question-text"
+            class="text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center mb-24"
+          >
+            Pergunta Desconhecida
+          </h2>
+          <div
+            id="alternatives-container"
+            class="w-full max-w-full flex gap-5 justify-center items-center flex-wrap"
+          ></div>
+        </div>
+
+        <!-- Team Select -->
+        <div
+          class="team-selection flex items-center justify-between w-full max-w-full mx-20 shadow-xl bg-black/25 backdrop-blur-xl py-6 px-12 rounded-lg mt-8 mb-4 mt-auto min-h-7xl"
+          id="team-selection"
+        >
+          <div
+            id="team-red-arrow"
+            class="team-arrow text-red-500 text-7xl font-bold py-2 px-4 animate-glow-pulse"
+            style="color: var(--team-red-color)"
+          >
+            <i class="fa-solid fa-arrow-left"></i>
+          </div>
+          <div id="team-select-text" class="text-white font-bold text-5xl">
+            VALENDO!
+          </div>
+          <div
+            id="team-blue-arrow"
+            class="team-arrow text-blue-500 text-7xl font-bold py-2 px-4 animate-glow-pulse"
+            style="color: var(--team-blue-color)"
+          >
+            <i class="fa-solid fa-arrow-right"></i>
+          </div>
+
+          <style>
+            @keyframes glowPulse {
+              0%,
+              100% {
+                text-shadow: 0 0 10px currentColor, 0 0 20px currentColor,
+                  0 0 30px currentColor;
+                transform: scale(1);
+              }
+              50% {
+                text-shadow: 0 0 20px currentColor, 0 0 40px currentColor,
+                  0 0 60px currentColor;
+                transform: scale(1.2);
+              }
+            }
+
+            .animate-glow-pulse {
+              animation: glowPulse 1.5s infinite ease-in-out;
+            }
+          </style>
+        </div>
+
+        <!-- Timer -->
+        <div
+          id="timer-container"
+          class="timer-container fixed bottom-0 left-0 w-full h-4 shadow-xl bg-black/25 overflow-hidden flex justify-center align-center items-center rounded-lg"
+        >
+          <div
+            id="timer-progress"
+            class="h-full rounded-lg"
+            style="
+              background: linear-gradient(
+                to right,
+                var(--team-red-color),
+                var(--team-blue-color)
+              );
+              width: 1000%;
+              transition: width 10s linear;
+            "
+          ></div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="scripts/genius-core/calibrator.js"></script>
+  <script src="scripts/genius-core/toasty.js"></script>
+  <script src="scripts/genius-core/utils.js"></script>
+  <script src="scripts/genius-core/game.js"></script>
+  <script src="scripts/genius-core/flash-modal.js"></script>
+  <script src="scripts/genius-core/media-manager.js"></script>
+  <script src="scripts/genius-core/ws-manager.js"></script>
+  <script src="scripts/genius-core/settings-manager.js"></script>
+  <script src="scripts/genius-core/quiz-manager.js"></script>
+  <script src="scripts/genius-core/file-uploader.js"></script>
+  <script src="scripts/genius-core/main.js"></script>
+</html>
