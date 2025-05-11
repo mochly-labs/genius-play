@@ -591,7 +591,6 @@ function loadHome() {
       getById("game-version").textContent =
         buildVersion + " (mais recente: " + version + ")";
     });
-    buttons.login.disabled = true;
     wsManager.on("onAuth", (data) => {
       if (data.status === "success") {
         buttons.login.disabled = true;
