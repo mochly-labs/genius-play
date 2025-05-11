@@ -11,6 +11,8 @@ const FlashModal = (() => {
       wrapper.innerHTML = `<div class="cross"><span></span><span></span></div>`;
     } else if (type === "warning") {
       wrapper.innerHTML = `<div class="exclamation">!</div>`;
+    } else if (type === "wave") {
+      wrapper.innerHTML = `<div class="wave"><span class="wave-emoji">👋</span></div>`;
     } else {
       wrapper.innerHTML = `<div class="info">i</div>`;
     }
@@ -68,6 +70,35 @@ const FlashModal = (() => {
         color: #38bdf8;
         animation: pulse 1s infinite;
       }
+      .flash-modal-icon.wave .wave {
+        width: 20px;
+        height: 20px;
+        animation: wave .2s infinite;
+        font-size: 2rem;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+        
+      .wave-emoji {
+        animation-name: wave-animation; 
+        animation-duration: 2.5s;
+        animation-iteration-count: infinite;
+        display: inline-block;
+      }
+
+      @keyframes wave-animation {
+        0% { transform: rotate( 0.0deg) }
+        10% { transform: rotate(14.0deg) }
+        20% { transform: rotate(-8.0deg) }
+        30% { transform: rotate(14.0deg) }
+        40% { transform: rotate(-4.0deg) }
+        50% { transform: rotate(10.0deg) }
+        60% { transform: rotate( 0.0deg) }
+        100% { transform: rotate( 0.0deg) }
+      }
+
       @keyframes pop {
         0% { transform: scale(0); opacity: 0; }
         100% { transform: scale(1); opacity: 1; }
@@ -97,7 +128,7 @@ const FlashModal = (() => {
    * Displays a modal notification with an icon, text, and optional sound.
    *
    * @param {Object} options - Configuration options for the modal.
-   * @param {string} [options.type="info"] - The type of modal to display ("info", "success", "error", "warning").
+   * @param {string} [options.type="info"] - The type of modal to display ("info", "success", "error", "warning", "wave").
    * @param {string} [options.text=""] - The main text to display in the modal.
    * @param {string} [options.subtext=""] - The subtext to display in the modal.
    * @param {number} [options.duration=3000] - Duration in milliseconds before the modal automatically closes.
@@ -281,7 +312,6 @@ const FlashModal = (() => {
 
   return { show, teamBuzz };
 })();
-
 
 const LoginModal = (() => {
   function injectStyles() {

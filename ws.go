@@ -17,6 +17,7 @@ var (
 	institutionShortname string
 	isLoggedIn           bool
 	userData             map[string]interface{}
+	latestVersion        string
 )
 
 func saveCredentials(user, pass string) error {
@@ -56,7 +57,7 @@ func initWS() {
 	for {
 		ctx2, cancel2 = context.WithTimeout(context.Background(), 5*time.Second)
 		conn, _, err := websocket.Dial(ctx2, "wss://geniusplay-server.onrender.com", nil)
-		
+
 		if err != nil {
 			time.Sleep(5 * time.Second)
 			continue
@@ -105,6 +106,10 @@ func initWS() {
 				}
 			case "version":
 				log.Println("Server version:", msg["version"])
+				broadcastToWebSocketClients("version", map[string]interface{}{
+					"version": msg["version"],
+				})
+				latestVersion = msg["version"].(string)
 			case "ping":
 				// keepalive ping received!
 			default:

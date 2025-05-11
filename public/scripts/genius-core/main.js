@@ -126,7 +126,10 @@ async function LoadGame() {
     const loadedQuestionary = await getQuestionaryById(questionary.id);
 
     if (settings["music-toggle"]) {
-      bgm.src = loadedQuestionary.music || await MediaManager.loadMusic() || "/audio/bgm.mp3";
+      bgm.src =
+        loadedQuestionary.music ||
+        (await MediaManager.loadMusic()) ||
+        "/audio/bgm.mp3";
       bgm.volume = parseInt(settings["music-volume"] || 50) / 100;
     } else {
       bgm.volume = 0;
@@ -471,10 +474,11 @@ function loadHome() {
     buttons.clearData?.addEventListener("click", limparTudo);
     buttons.login?.addEventListener("click", async () => {
       const { username, password } = await LoginModal.show();
-      if (!username || !password) return FlashModal.show({
-        type: "error",
-        text: "Campos inválidos",
-      });
+      if (!username || !password)
+        return FlashModal.show({
+          type: "error",
+          text: "Campos inválidos",
+        });
 
       wsManager.send({ type: "login", username, password });
       buttons.login.disabled = true;
@@ -483,7 +487,6 @@ function loadHome() {
         type: "info",
         text: "Login sendo processado!",
       });
-      
     });
     buttons.quit?.addEventListener("click", () => {
       Swal.fire({
@@ -548,8 +551,48 @@ function loadHome() {
     wsManager.on("onConnect", () => {
       wsManager.send({ type: "list-questionaries" });
     });
+    const buildVersion = "Alpha v2.0.5";
+
+    wsManager.on("onVersionReceived", (data) => {
+      const version = data.version;
+      // Compare versions by removing "Alpha v" prefix and comparing numbers
+      const currentVersion = buildVersion
+        .replace("Alpha v", "")
+        .split(".")
+        .map(Number);
+      const remoteVersion = version
+        .replace("Alpha v", "")
+        .split(".")
+        .map(Number);
+      let isOutdated = false;
+
+      // Check each version number segment
+      for (let i = 0; i < currentVersion.length; i++) {
+        if (remoteVersion[i] > currentVersion[i]) {
+          FlashModal.show({
+            type: "warning",
+            text: "Nova versão disponível!",
+            subtext: `Você está usando a versão ${buildVersion}, mas a versão ${version} já está disponível.`,
+          });
+          isOutdated = true;
+          break;
+        } else if (remoteVersion[i] < currentVersion[i]) {
+          break;
+        }
+      }
+      if (isOutdated) {
+        getById("version-fixed").classList.add("text-red-500");
+        getById("game-version").classList.add("text-red-500");
+        getById("version-fixed").classList.remove("text-green-600");
+        getById("game-version").classList.remove("text-green-600");
+      }
+      getById("version-fixed").textContent =
+        buildVersion + " (mais recente: " + version + ")";
+      getById("game-version").textContent =
+        buildVersion + " (mais recente: " + version + ")";
+    });
+    buttons.login.disabled = true;
     wsManager.on("onAuth", (data) => {
-      console.log(data)
       if (data.status === "success") {
         buttons.login.disabled = true;
         buttons.login.classList.add("hidden");
@@ -558,16 +601,11 @@ function loadHome() {
         getById("institution-display").classList.remove("hidden");
 
         FlashModal.show({
-          type: "success",
+          type: "wave",
           text: "Olá, " + data.user.name + "!",
         });
       } else {
         buttons.login.disabled = false;
-        FlashModal.show({
-          type: "error",
-          text: "Falha ao autenticar!",
-          subtext: data.error,
-        })
       }
     });
     wsManager.on("onUuidReceived", (uuid) => {

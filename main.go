@@ -159,6 +159,9 @@ func main() {
 						"status": "success",
 					}})
 				}
+				if latestVersion != "" {
+					conn.WriteJSON(map[string]interface{}{"type": "version", "data": map[string]interface{}{"version": latestVersion}})
+				}
 			} else if msg["type"] == "togglepin" {
 				pin := int(msg["pin"].(float64))
 				state := msg["data"].(bool)

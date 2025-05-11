@@ -17,6 +17,7 @@ class WebSocketManager {
       onError: [],
       onButtonPressed: [],
       onAuth: [],
+      onVersionReceived: [],
     };
   }
 
@@ -78,6 +79,9 @@ class WebSocketManager {
       case "auth":
         this.handleAuthMessage(message);
         break;
+      case "version":
+        this.handleVersionMessage(message);
+        break;
       default:
         console.log("Message received from server:", message);
     }
@@ -85,6 +89,10 @@ class WebSocketManager {
 
   handleAuthMessage(message) {
     this.triggerEvent("onAuth", message.data);
+  }
+
+  handleVersionMessage(message) {
+    this.triggerEvent("onVersionReceived", message.data);
   }
 
   handleUuidMessage(message) {
@@ -128,12 +136,12 @@ class WebSocketManager {
     if (!element) return;
 
     if (isConnected) {
-      element.classList.remove("text-red-700");
+      element.classList.remove("text-red-600");
       element.classList.add("text-green-600");
       element.textContent = "Sim";
     } else {
       element.classList.remove("text-green-600");
-      element.classList.add("text-red-700");
+      element.classList.add("text-red-600");
       element.textContent = "Não";
     }
   }
