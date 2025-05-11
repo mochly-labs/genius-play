@@ -153,6 +153,12 @@ func main() {
 				conn.WriteJSON(map[string]interface{}{"type": "upload", "success": true, "file": filename})
 			} else if msg["type"] == "handshake" {
 				conn.WriteJSON(map[string]interface{}{"type": "handshake", "status": isOnline})
+				if isLoggedIn {
+					conn.WriteJSON(map[string]interface{}{"type": "auth", "data": map[string]interface{}{
+						"user":   userData,
+						"status": "success",
+					}})
+				}
 			} else if msg["type"] == "togglepin" {
 				pin := int(msg["pin"].(float64))
 				state := msg["data"].(bool)
@@ -185,6 +191,10 @@ func main() {
 					continue
 				}
 				conn.WriteJSON(map[string]interface{}{"type": "delete", "success": true})
+			} else if msg["type"] == "login" {
+				username := msg["username"].(string)
+				password := msg["password"].(string)
+				setCredentials(username, password)
 			} else {
 				fmt.Printf("Mensagem recebida: %s\n", msg["type"])
 			}
@@ -202,6 +212,7 @@ func main() {
 	log.Println("[Pareamento] [v2] Sistema de pareamento OK!")
 
 	go app()
+	go initWS()
 	select {}
 }
 

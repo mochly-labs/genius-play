@@ -338,38 +338,12 @@ function loadHome() {
     FileUploader.initialize(wsManager);
 
     const greetingKey = "user-greeting";
-    let username = localStorage.getItem(greetingKey);
-    if (!username || username === "undefined") {
-      (async () => {
-        const { value: name } = await Swal.fire({
-          title: "Olá, seja bem-vindo(a)!",
-          text: "Por favor, insira seu nome abaixo.",
-          input: "text",
-          inputPlaceholder: "Seu nome",
-          confirmButtonText: "Salvar",
-          allowOutsideClick: false,
-          showCancelButton: false,
-          showLoaderOnConfirm: true,
-          preConfirm: (name) => {
-            if (name.trim().length < 2) {
-              Swal.showValidationMessage(
-                "Seu nome deve ter pelo menos 2 caracteres."
-              );
-            }
-            return name;
-          },
-          allowEscapeKey: false,
-        });
-        localStorage.setItem(greetingKey, name);
-        updateUsername(name);
-      })();
-    } else {
-      updateUsername(username);
-    }
 
     function updateUsername(name) {
       const el = getById("username-goodmorning");
+      const el2 = getById("username-display");
       if (el) el.innerText = name;
+      if (el2) el2.innerText = name;
     }
 
     const gameBg = get(".game-bg");
@@ -385,6 +359,7 @@ function loadHome() {
       clearData: get(".clear-data-btn"),
       reload: get(".reload-btn"),
       refresh: get(".refresh-btn"),
+      login: get("#login-btn"),
     };
 
     const inputs = {
@@ -494,7 +469,22 @@ function loadHome() {
     );
     buttons.reload?.addEventListener("click", () => window.location.reload());
     buttons.clearData?.addEventListener("click", limparTudo);
+    buttons.login?.addEventListener("click", async () => {
+      const { username, password } = await LoginModal.show();
+      if (!username || !password) return FlashModal.show({
+        type: "error",
+        text: "Campos inválidos",
+      });
 
+      wsManager.send({ type: "login", username, password });
+      buttons.login.disabled = true;
+
+      FlashModal.show({
+        type: "info",
+        text: "Login sendo processado!",
+      });
+      
+    });
     buttons.quit?.addEventListener("click", () => {
       Swal.fire({
         title: "Tem certeza que deseja encerrar?",
@@ -558,7 +548,28 @@ function loadHome() {
     wsManager.on("onConnect", () => {
       wsManager.send({ type: "list-questionaries" });
     });
+    wsManager.on("onAuth", (data) => {
+      console.log(data)
+      if (data.status === "success") {
+        buttons.login.disabled = true;
+        buttons.login.classList.add("hidden");
+        updateUsername(data.user.name);
+        getById("institution-display").textContent = data.user.institutionName;
+        getById("institution-display").classList.remove("hidden");
 
+        FlashModal.show({
+          type: "success",
+          text: "Olá, " + data.user.name + "!",
+        });
+      } else {
+        buttons.login.disabled = false;
+        FlashModal.show({
+          type: "error",
+          text: "Falha ao autenticar!",
+          subtext: data.error,
+        })
+      }
+    });
     wsManager.on("onUuidReceived", (uuid) => {
       Toasty.show("Socket conectado!", { type: "success", duration: 3000 });
       wsManager.updateUuidElement(uuid, true);

@@ -16,6 +16,7 @@ class WebSocketManager {
       onControllerStatusChanged: [],
       onError: [],
       onButtonPressed: [],
+      onAuth: [],
     };
   }
 
@@ -74,9 +75,16 @@ class WebSocketManager {
       case "stop":
         this.stop();
         break;
+      case "auth":
+        this.handleAuthMessage(message);
+        break;
       default:
         console.log("Message received from server:", message);
     }
+  }
+
+  handleAuthMessage(message) {
+    this.triggerEvent("onAuth", message.data);
   }
 
   handleUuidMessage(message) {

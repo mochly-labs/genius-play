@@ -281,3 +281,148 @@ const FlashModal = (() => {
 
   return { show, teamBuzz };
 })();
+
+
+const LoginModal = (() => {
+  function injectStyles() {
+    if (document.getElementById("login-modal-styles")) return;
+    const style = document.createElement("style");
+    style.id = "login-modal-styles";
+    style.textContent = `
+      /* Modal Container */
+      .login-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+        animation: fadeIn 0.4s ease-out;
+      }
+
+      /* Modal Content */
+      .login-modal-content {
+        background-size: 400% 400%;
+        animation: gradientBackground 6s ease infinite;
+        border-radius: 20px;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 420px;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        color: white;
+        text-align: center;
+        font-size: 1.2rem;
+        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+        transform: scale(0.95);
+        animation: popUp 0.6s ease-out forwards;
+      }
+
+      /* Header */
+      .login-modal-content h2 {
+        font-size: 2rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+        color: #ffffff;
+      }
+
+      /* Input Fields */
+      .login-modal input {
+        padding: 0.8rem;
+        border: 2px solid #ffffff;
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 1rem;
+        width: 100%;
+        transition: border-color 0.3s;
+      }
+
+      /* Focus Effect on Inputs */
+      .login-modal input:focus {
+        outline: none;
+        border-color: #f97316;
+        box-shadow: 0px 0px 10px rgba(255, 165, 0, 0.5);
+      }
+
+      /* Button */
+      .login-modal button {
+        padding: 1rem;
+        background-color: #38bdf8;
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
+
+      /* Button Hover Effect */
+      .login-modal button:hover {
+        background-color: #2563eb;
+        transform: scale(1.05);
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+
+      @keyframes gradientBackground {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      @keyframes popUp {
+        0% { transform: scale(0.95); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  injectStyles();
+
+  function show() {
+    return new Promise((resolve) => {
+      const modal = document.createElement("div");
+      modal.className = "login-modal";
+      modal.innerHTML = `
+        <div class="login-modal-content bg-black/50">
+          <h2>Login</h2>
+          <input type="text" id="username" placeholder="Nome de usuário" required />
+          <input type="password" id="password" placeholder="Senha" required />
+          <button id="login-btn">Login</button>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+
+      const loginButton = modal.querySelector("#login-btn");
+      loginButton.addEventListener("click", () => {
+        const username = modal.querySelector("#username").value;
+        const password = modal.querySelector("#password").value;
+        modal.style.opacity = "0";
+        setTimeout(() => {
+          modal.remove();
+          resolve({ username, password });
+        }, 300);
+      });
+
+      requestAnimationFrame(() => {
+        modal.style.opacity = "1";
+      });
+    });
+  }
+
+  return { show };
+})();
