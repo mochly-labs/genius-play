@@ -63,7 +63,7 @@ func main() {
 
 	dataJsonPath := filepath.Join(geniusPlayPath, "data.json")
 	NoPanic()
-	
+
 	func() {
 		file, err := os.Open(dataJsonPath)
 		if err == nil {
@@ -299,9 +299,9 @@ func main() {
 				gp.UnpairDevice()
 			} else if msg["type"] == "delete" {
 				fileName := msg["file"].(string)
-				filePath := filepath.Join(geniusPlayPath, fileName)
+				filePath := filepath.Join(geniusPlayDataPath, fileName)
 
-				absUploadDir, err := filepath.Abs(geniusPlayPath)
+				absUploadDir, err := filepath.Abs(geniusPlayDataPath)
 				if err != nil {
 					log.Println("Erro ao obter caminho absoluto do diretório upload:", err)
 					conn.WriteJSON(map[string]interface{}{"type": "delete", "success": false})
