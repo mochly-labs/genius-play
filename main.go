@@ -183,7 +183,7 @@ func main() {
 			} else if msg["type"] == "upload" {
 				data := fmt.Sprintf("%v", msg["data"])
 				filename := fmt.Sprintf("%x.json", rand.Uint32())
-				fileName := filepath.Join(geniusPlayPath, filename)
+				fileName := filepath.Join(geniusPlayDataPath, filename)
 
 				file, err := os.Create(fileName)
 				if err != nil {
