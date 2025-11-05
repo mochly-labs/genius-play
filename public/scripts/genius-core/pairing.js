@@ -260,6 +260,8 @@ class ModernModeController {
   }
 
   disconnectDevice() {
+
+    this.wsManager.send({ type: "unpair" });
     this.showUnpairedView();
     this.startScanning();
   }
