@@ -6,7 +6,7 @@
     <link href="icons/css/fontawesome.css" rel="stylesheet" />
     <link href="icons/css/brands.css" rel="stylesheet" />
     <link href="icons/css/solid.css" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/scripts/tailwind.js"></script>
     <link href="icons/favicon.png" rel="icon" type="image/png" />
     <style>
       @font-face {
@@ -32,22 +32,18 @@
         opacity: 0;
       }
 
-      /* Animação de entrada do logo */
       .animate-zoom-in {
         animation: zoomIn 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
       }
 
-      /* Animação de fade-in para o iframe */
       .animate-fade-in {
         animation: fadeIn 1s ease-in-out forwards;
       }
 
-      /* Animação de fade-out para a tela de carregamento */
       .animate-fade-out {
         animation: fadeOut 0.8s ease-in-out forwards;
       }
 
-      /* Animação da barra de progresso */
       #progressBar {
         animation: fillProgress .25s ease-out forwards;
       }
@@ -92,7 +88,6 @@
     </style>
   </head>
   <body class="bg-black">
-    <!-- Tela de Carregamento -->
     <div
       id="loadingScreen"
       class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black"

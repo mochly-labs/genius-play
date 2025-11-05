@@ -208,7 +208,7 @@ func handleDisconnect() {
 		}
 	}()
 	isonline = false
-	isLoggedIn = false
+	isLoggedIn = false 
 	userData = nil
 	if isOnline {
 		statusItemG.SetTitle("Status: Offline (Pareado)")
