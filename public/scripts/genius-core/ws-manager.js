@@ -72,7 +72,9 @@ class WebSocketManager {
         this.handleQuestionaryMessage(message);
         break;
       case "handshake":
+        break;
       case "status":
+        console.log("Status msg:", message, message.type);
         this.handleStatusMessage(message);
         break;
       case "button":
@@ -136,6 +138,7 @@ class WebSocketManager {
         (message.status === true || message.status === "true")) ||
       (message.data && (message.data === true || message.data === "true"));
     this.triggerEvent("onControllerStatusChanged", isConnected);
+    console.log("COnnected?", isConnected)
     this.updateControllerStatusElement(isConnected);
   }
 

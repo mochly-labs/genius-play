@@ -114,7 +114,7 @@ func (p *ArduinoPairer) readMessages() {
 			lastPing = time.Now()
 			EmitAll("status", "true")
 			go func() {
-				if isonline {
+				if isOnline {
 					statusItemG.SetTitle("Status: Online")
 					setStatus("Online")
 				} else {
@@ -136,7 +136,7 @@ func (p *ArduinoPairer) disconnect() {
 		currentStatus.Online = false
 		EmitAll("status", "false")
 		setStatus("Offline")
-		if isonline {
+		if isOnline {
 			statusItemG.SetTitle("Status: Online (Sem Controle)")
 			setStatus("Online (Sem Controle)")
 		} else {

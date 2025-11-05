@@ -212,7 +212,7 @@ func processMessage(msg map[string]interface{}) {
 
 	default:
 		if uuid, ok := msg["uuid"].(string); ok {
-			isonline = true
+			isOnline = true
 			if isOnline {
 				setStatus("Online")
 			} else {
@@ -232,13 +232,13 @@ func handleDisconnect() {
 		}
 	}()
 
-	if !isLoggedIn && !isonline {
+	if !isLoggedIn && !isOnline {
 		return
 	}
 
 	log.Println("Conexão perdida. Atualizando status para offline.")
 
-	isonline = false
+	isOnline = false
 	isLoggedIn = false
 	userData = nil
 

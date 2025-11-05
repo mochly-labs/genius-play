@@ -642,7 +642,13 @@ function loadHome() {
     const buildVersion = "Beta v2.1.0";
 
     wsManager.on("onVersionReceived", (data) => {
-      const version = data.version;
+      let version
+      if (!data || !data.version) {
+        version = "Beta v2.1.0"
+      } else {
+        
+       version = data.version;
+      }
       const currentVersion = buildVersion
         .replace("Beta v", "")
         .split(".")
