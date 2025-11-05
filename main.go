@@ -183,7 +183,7 @@ func main() {
 			} else if msg["type"] == "upload" {
 				data := fmt.Sprintf("%v", msg["data"])
 				filename := fmt.Sprintf("%x.json", rand.Uint32())
-				fileName := filepath.Join(geniusPlayPath, filename)
+				fileName := filepath.Join(geniusPlayDataPath, filename)
 
 				file, err := os.Create(fileName)
 				if err != nil {
@@ -343,9 +343,11 @@ func main() {
 	go initWS()
 	select {}
 }
-
 func setupUploadDir() {
 	if err := os.MkdirAll(geniusPlayPath, 0755); err != nil {
+		log.Fatal("Erro ao criar diretório main:", err)
+	}
+	if err := os.MkdirAll(geniusPlayDataPath, 0755); err != nil {
 		log.Fatal("Erro ao criar diretório upload:", err)
 	}
 }
