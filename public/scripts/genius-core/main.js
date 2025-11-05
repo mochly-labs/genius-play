@@ -82,7 +82,6 @@ async function LoadGame() {
       { quiz, randomize: settings["randomize-mode"] },
       settings
     );
-    console.log(currentGame.getQuestion());
     currentGame.iniciarPergunta();
   }
 
@@ -98,16 +97,52 @@ async function LoadGame() {
     });
 
     wsManager.on("onButtonPressed", (event) => {
-      console.log(event);
       if (!currentGame) return;
       const buttons = {
         1: settings["inverter-toggle"] ? "left" : "right",
         2: settings["inverter-toggle"] ? "right" : "left",
-        3: "reset",
       };
       if (buttons[event]) currentGame.setSelected(buttons[event]);
     });
 
+    let pinMappings = JSON.parse(localStorage.getItem("pins")) || {
+      left: [],
+      right: [],
+      reset: [],
+    };
+
+    wsManager.on("onBtnModern", (event) => {
+      let team = null;
+
+      if (pinMappings.left.includes(event.data.button)) {
+        team = "left";
+      } else if (pinMappings.right.includes(event.data.button)) {
+        team = "right";
+      } else if (pinMappings.reset.includes(event.data.button)) {
+        currentGame.scores.left = 0;
+        currentGame.scores.right = 0;
+        currentGame.atualizarScore(true, 0);
+        return;
+      }
+
+      if (team) {
+        if (settings["inverter-toggle"]) {
+          team = team === "left" ? "right" : "left";
+        }
+        if (currentGame) {
+          currentGame.setSelected(team);
+        }
+      }
+    });
+
+
+    
+    setInterval(() => {
+      wsManager.send({
+        type: "config",
+        data: pinMappings.left.concat(pinMappings.right, pinMappings.reset),
+      });
+    }, 5000);
     wsManager.connect();
     if (homeContent) homeContent.remove();
 
@@ -141,6 +176,14 @@ async function LoadGame() {
 
     if (settings["team-colors"]) {
       applyTeamColors(settings["team-colors"]);
+    }
+
+    document.body.classList.toggle("no-blur", settings["lite-mode-toggle"]);
+    if (settings["lite-mode-toggle"]) {
+      document.querySelectorAll("*").forEach((el) => {
+        el.style.setProperty("--tw-backdrop-blur", "blur(0px)", "important");
+        el.style.setProperty("--tw-blur", "blur(0px)", "important");
+      });
     }
 
     backgroundElement.style.backgroundImage = `url("${
@@ -182,6 +225,7 @@ function loadHome() {
       "music-volume",
       "effects-volume",
       "confetti-toggle",
+      "lite-mode-toggle",
       "wrong-question-mode",
       "randomize-mode",
       "release-time",
@@ -206,6 +250,7 @@ function loadHome() {
       "release-time": "10",
       "intermission-time": "5",
       "inverter-toggle": false,
+      "lite-mode-toggle": false,
     },
   });
 
@@ -316,15 +361,48 @@ function loadHome() {
 
     src.connect(analyser);
     analyser.connect(context.destination);
-    analyser.fftSize = 64;
+    analyser.fftSize = 2048;
 
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
-
+    let oldbd = 1;
     function pulseToBeat() {
       analyser.getByteFrequencyData(dataArray);
-      const average = dataArray.reduce((a, b) => a + b) / bufferLength;
-      const scale = Math.max(Math.min(3, 0.5 + average / 200), 1);
+      const bassBands = dataArray.slice(0, 12);
+
+      const highBands = dataArray.slice(90, 280);
+      const numHighBands = highBands.length;
+
+      const bassAverage =
+        bassBands.reduce((a, b) => a + b, 0) / bassBands.length;
+      let scale = 1.0 + (bassAverage / 400) * 0.9;
+
+      let highBoost = 0;
+      const highFrequencyThreshold = 160;
+      const activeHighBands = highBands.filter(
+        (value) => value > highFrequencyThreshold
+      ).length;
+
+      highBoost = activeHighBands * 0.1;
+      scale += highBoost;
+
+      let div = 2;
+      if (scale > 3) div = 3;
+      if (scale > 4) div = 5;
+      if (scale > 6) div = 7;
+      if (scale > 7) div = 9;
+      if (scale > 10) div = 13;
+      if (scale > 13) div = 14;
+      if (scale > 17) div = 15;
+      if (scale > 21) div = 17;
+      if (scale > 25) div = 20;
+      scale = Math.min(scale / div, 2.0);
+      scale = Math.max(scale, 1.0);
+
+      scale = Math.max(scale, oldbd - 0.125);
+      scale = Math.min(scale, oldbd + 0.125);
+
+      oldbd = scale;
       updateScaleMultiplier(scale);
       requestAnimationFrame(pulseToBeat);
     }
@@ -340,8 +418,6 @@ function loadHome() {
     settingsManager.initialize();
     FileUploader.initialize(wsManager);
 
-    const greetingKey = "user-greeting";
-
     function updateUsername(name) {
       const el = getById("username-goodmorning");
       const el2 = getById("username-display");
@@ -355,6 +431,7 @@ function loadHome() {
       home: get(".home-btn"),
       store: get(".store-btn"),
       addons: get(".addons-btn"),
+      controller: get(".controller-btn"),
       builder: get(".builder-btn"),
       uploader: get(".uploader-btn"),
       settings: get(".settings-btn"),
@@ -366,6 +443,7 @@ function loadHome() {
     };
 
     const inputs = {
+      liteMode: getById("lite-mode-toggle"),
       music: getById("game-music"),
       background: getById("game-background"),
       soundToggle: getById("sound-toggle"),
@@ -401,6 +479,11 @@ function loadHome() {
       updateBgmVolume();
       updateEffectsVolume();
     }
+
+    document.body.classList.toggle("no-blur", inputs.liteMode.checked);
+    inputs.liteMode?.addEventListener("change", (e) => {
+      document.body.classList.toggle("no-blur", e.target.checked);
+    });
 
     inputs.music?.addEventListener("change", async (e) => {
       const file = e.target.files[0];
@@ -461,6 +544,9 @@ function loadHome() {
     buttons.builder?.addEventListener("click", () =>
       switchTab("#builder-section")
     );
+    buttons.controller?.addEventListener("click", () =>
+      switchTab("#control-section")
+    );
     buttons.uploader?.addEventListener("click", () =>
       switchTab("#file-uploader-section")
     );
@@ -506,8 +592,6 @@ function loadHome() {
         });
         bgm = null;
 
-        wsManager.disconnect();
-        wsManager.stop();
         context?.close();
 
         document.body.innerHTML = "";
@@ -544,29 +628,32 @@ function loadHome() {
           });
         });
 
-        setTimeout(() => window.close(), 600);
+        setTimeout(() => {
+          wsManager.send({ type: "shutdown" });
+          wsManager.disconnect();
+          wsManager.stop();
+        }, 600);
       });
     });
 
     wsManager.on("onConnect", () => {
       wsManager.send({ type: "list-questionaries" });
     });
-    const buildVersion = "Alpha v2.0.5";
+    const buildVersion = "Beta v2.1.0";
 
     wsManager.on("onVersionReceived", (data) => {
       const version = data.version;
-      // Compare versions by removing "Alpha v" prefix and comparing numbers
       const currentVersion = buildVersion
-        .replace("Alpha v", "")
+        .replace("Beta v", "")
         .split(".")
         .map(Number);
       const remoteVersion = version
         .replace("Alpha v", "")
+        .replace("Beta v", "")
         .split(".")
         .map(Number);
-      let isOutdated = false;
+      let isOutdated = 0;
 
-      // Check each version number segment
       for (let i = 0; i < currentVersion.length; i++) {
         if (remoteVersion[i] > currentVersion[i]) {
           FlashModal.show({
@@ -574,22 +661,36 @@ function loadHome() {
             text: "Nova versão disponível!",
             subtext: `Você está usando a versão ${buildVersion}, mas a versão ${version} já está disponível.`,
           });
-          isOutdated = true;
+          isOutdated = 1;
           break;
         } else if (remoteVersion[i] < currentVersion[i]) {
+          isOutdated = 2;
           break;
         }
       }
-      if (isOutdated) {
+      if (isOutdated === 1) {
         getById("version-fixed").classList.add("text-red-500");
         getById("game-version").classList.add("text-red-500");
         getById("version-fixed").classList.remove("text-green-600");
         getById("game-version").classList.remove("text-green-600");
       }
-      getById("version-fixed").textContent =
-        buildVersion + " (mais recente: " + version + ")";
-      getById("game-version").textContent =
-        buildVersion + " (mais recente: " + version + ")";
+      if (isOutdated === 2) {
+        getById("version-fixed").textContent =
+          buildVersion +
+          " (mais recente: " +
+          version +
+          ", atualizado demais, devbuild?)";
+        getById("game-version").textContent =
+          buildVersion +
+          " (mais recente: " +
+          version +
+          ", atualizado demais, devbuild?)";
+      } else {
+        getById("version-fixed").textContent =
+          buildVersion + " (mais recente: " + version + ")";
+        getById("game-version").textContent =
+          buildVersion + " (mais recente: " + version + ")";
+      }
     });
     wsManager.on("onAuth", (data) => {
       if (data.status === "success") {
@@ -598,11 +699,6 @@ function loadHome() {
         updateUsername(data.user.name);
         getById("institution-display").textContent = data.user.institutionName;
         getById("institution-display").classList.remove("hidden");
-
-        FlashModal.show({
-          type: "wave",
-          text: "Olá, " + data.user.name + "!",
-        });
       } else {
         buttons.login.disabled = false;
       }
@@ -625,6 +721,33 @@ function loadHome() {
       if (buttons[event]) ButtonPressCalibrator(buttons[event]);
     });
 
+    wsManager.on("onBtnModern", (event) => {
+      let btnId = null;
+
+      let pinMappings = JSON.parse(localStorage.getItem("pins")) || {
+        left: [],
+        right: [],
+        reset: [],
+      };
+
+      if (pinMappings.left.includes(event.data.button)) {
+        btnId = 1;
+      } else if (pinMappings.right.includes(event.data.button)) {
+        btnId = 2;
+      } else if (pinMappings.reset.includes(event.data.button)) {
+        return;
+      }
+
+      if (btnId !== null) {
+        const settings = JSON.parse(localStorage.getItem("gameSettings") || "{}");
+        if (settings["inverter-toggle"]) {
+          btnId = btnId === 1 ? 2 : 1;
+        }
+        ButtonPressCalibrator(btnId);
+      }
+    });
+
+
     wsManager.on("onControllerStatusChanged", (isConnected) => {
       wsManager.updateControllerStatusElement(isConnected);
       hasController = isConnected;
@@ -641,6 +764,8 @@ function loadHome() {
     });
 
     wsManager.connect();
+
+    new ModernModeController(wsManager, settingsManager);
     setupAudio();
   }
 
@@ -672,8 +797,9 @@ const debugMode = false;
 
 let thisLoaded = false;
 window.addEventListener("message", async (event) => {
-  if (event.data != "loaded" || thisLoaded) return;
+  if (event.data != "loaded" || thisLoaded || window.wasLoaded) return;
   thisLoaded = true;
+  window.wasLoaded = true;
   if (localStorage.getItem("InGame") === "true") {
     const loadingScreen = getById("loading-screen");
     const game = getById("ingame");

@@ -14,5 +14,5 @@ function ButtonPressCalibrator(btnId) {
   debounceTimeouts[btnId] = setTimeout(() => {
     btn.classList.remove("opacity-100");
     btn.classList.add("opacity-20");
-  }, 1000);
+  }, 150);
 }

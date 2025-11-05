@@ -18,6 +18,10 @@ class WebSocketManager {
       onButtonPressed: [],
       onAuth: [],
       onVersionReceived: [],
+      onScanResult: [],
+      onState: [],
+      onErrorResponse: [],
+      onBtnModern: []
     };
   }
 
@@ -28,6 +32,7 @@ class WebSocketManager {
       try {
         const message = JSON.parse(event.data);
         this.handleMessage(message);
+        console.warn(message)
       } catch (error) {
         console.error("Error parsing message:", error);
         this.triggerEvent("onError", error);
@@ -40,11 +45,12 @@ class WebSocketManager {
       this.updateConnectionStatus(true);
     };
 
-    this.socket.onclose = () => {
+    this.socket.onclose = (x) => {
       clearTimeout(this.keepAliveTimeout);
       this.triggerEvent("onDisconnect");
       this.updateConnectionStatus(false);
       this.scheduleReconnect();
+      console.error("WebSocket error!??!?!", x);
     };
 
     this.socket.onerror = (error) => {
@@ -54,6 +60,7 @@ class WebSocketManager {
   }
 
   handleMessage(message) {
+    console.log(message)
     switch (message.type) {
       case "uuid":
         this.handleUuidMessage(message);
@@ -71,7 +78,7 @@ class WebSocketManager {
       case "button":
         this.eventHandlers.onButtonPressed.forEach((handler) =>
           handler(message.data)
-        )
+        );
         break;
       case "stop":
         this.stop();
@@ -81,6 +88,19 @@ class WebSocketManager {
         break;
       case "version":
         this.handleVersionMessage(message);
+        break;
+
+      case "scanresult":
+        this.triggerEvent("onScanResult", message.data);
+        break;
+      case "state":
+        this.triggerEvent("onState", message.data);
+        break;
+      case "error":
+        this.triggerEvent("onErrorResponse", message.data);
+        break;
+      case "modernBtn":
+        this.triggerEvent("onBtnModern", message);
         break;
       default:
         console.log("Message received from server:", message);
@@ -204,4 +224,3 @@ class WebSocketManager {
     this.quizzes = [];
   }
 }
-

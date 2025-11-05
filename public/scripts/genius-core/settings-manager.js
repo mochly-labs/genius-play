@@ -14,12 +14,12 @@ class SettingsManager {
         element.type === "checkbox" ? element.checked : element.value;
     });
 
-    localStorage.setItem("gameSettings", JSON.stringify(settings));
+    this.WriteRaw("gameSettings", settings);
   }
+
   loadSettings() {
     try {
-      const savedSettings =
-        JSON.parse(localStorage.getItem("gameSettings")) || {};
+      const savedSettings = this.ReadRaw("gameSettings") || {};
       const mergedSettings = { ...this.DEFAULT_SETTINGS, ...savedSettings };
 
       this.SETTINGS_IDS.forEach((id) => {
@@ -34,13 +34,10 @@ class SettingsManager {
           Array.from(element.options).forEach((opt) => {
             opt.selected = Array.isArray(value) && value.includes(opt.value);
           });
-        } else if (element instanceof HTMLSelectElement) {
-          element.value = value;
         } else {
           element.value = value;
         }
 
-        // Trigger relevant events
         element.dispatchEvent(new Event("change"));
         if (element.type !== "checkbox") {
           element.dispatchEvent(new Event("input"));
@@ -65,5 +62,23 @@ class SettingsManager {
   initialize() {
     this.loadSettings();
     this.setupAutoSave();
+  }
+
+  WriteRaw(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error(`Failed to save raw data for key "${key}":`, error);
+    }
+  }
+
+  ReadRaw(key) {
+    try {
+      const value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : null;
+    } catch (error) {
+      console.error(`Failed to read raw data for key "${key}":`, error);
+      return null;
+    }
   }
 }

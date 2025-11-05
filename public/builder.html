@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Genius Play! - Editor</title>
+    <title>Genius Play! - Criador</title>
     <script src="/scripts/tailwind.js"></script>
     <script src="/scripts/sortable.js"></script>
     <script src="/scripts/genius-core/toasty.js"></script>
@@ -16,6 +16,31 @@
         src: url("/fonts/Quicksand.ttf") format("truetype");
         font-weight: bold;
         font-style: normal;
+      }
+
+      /* ===== Scrollbar Global ===== */
+      * {
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: #6c5b7b00 #1a1a1a00; /* Firefox: thumb + track */
+      }
+
+      /* Chrome, Edge e Safari */
+      *::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      *::-webkit-scrollbar-track {
+        background: #1a1a1a; /* trilho */
+      }
+
+      *::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #ff7e5f, #6c5b7b, #50c9b7);
+        border-radius: 8px;
+      }
+
+      *::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #f3a683, #6c5b7b, #50c9b7);
       }
 
       * {
@@ -69,13 +94,13 @@
     <div class="container mx-auto px-4 py-8 max-w-4xl">
       <header class="mb-8">
         <h1 class="text-xl font-bold text-indigo-400 mb-2 text-center">
-          Editor
+          Criador
         </h1>
         <p class="text-gray-400 text-center">Versão: Alpha 2.0.3</p>
       </header>
 
       <div class="bg-black/80 rounded-lg shadow-lg p-6 mb-6">
-        <div class="flex flex-col sm:flex-row gap-4 mb-6">
+        <div class="flex flex-col gap-4 mb-6">
           <div class="flex-1">
             <label
               for="quizTitle"
@@ -109,7 +134,12 @@
               <i class="fas fa-file-export"></i> Exportar (JSON)
             </button>
             <input type="file" id="fileInput" class="file-input" accept=".qn" />
-            <input type="file" id="fileInput2" class="file-input" accept=".json" />
+            <input
+              type="file"
+              id="fileInput2"
+              class="file-input"
+              accept=".json"
+            />
           </div>
         </div>
 

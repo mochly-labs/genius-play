@@ -16,13 +16,11 @@ const httpUrl = wsUrl
   .replace(/^wss?:\/\//, (m) => (m === "wss://" ? "https://" : "http://"))
   .replace("/ws", "");
 function createAlternative(name, image, id) {
-  // Create wrapper with flex layout
   const alternativeWrapper = document.createElement("div");
   alternativeWrapper.className =
     "alternative-wrapper flex flex-col items-center bg-black/10 hover:bg-black/60 backdrop-blur-sm p-6 rounded-lg cursor-pointer shadow-lg";
   alternativeWrapper.id = `alternative-${id}`;
 
-  // Create image element if there is a valid image
   if (image && image !== "null" && image !== "") {
     const img = document.createElement("img");
     img.src = image;
@@ -30,16 +28,13 @@ function createAlternative(name, image, id) {
     img.className = "alternative-img w-24 h-24 object-cover rounded-lg mb-2";
     alternativeWrapper.appendChild(img);
   }
-  // Create h1 element with adaptive styling
   const h1 = document.createElement("h1");
   h1.className =
     "alternative-btn text-white font-bold py-3 px-6 rounded-lg transition-all text-lg";
   h1.textContent = name;
 
-  // Add h1 to wrapper
   alternativeWrapper.appendChild(h1);
 
-  // Add data attribute to track if it has an image (can be used for CSS targeting)
   alternativeWrapper.dataset.hasImage =
     image && image !== "null" && image !== "" ? "true" : "false";
 
@@ -81,10 +76,8 @@ function updateTeamSelect(value) {
   }
 }
 function shuffle(array, seed) {
-  const result = [...array]; // clone to not mutate
-  const prng = mulberry32(xmur3(seed)); // seeded RNG
-
-  // Fisher-Yates shuffle using our PRNG
+  const result = [...array];
+  const prng = mulberry32(xmur3(seed));
   for (let i = result.length - 1; i > 0; i--) {
     const j = Math.floor(prng() * (i + 1));
     [result[i], result[j]] = [result[j], result[i]];
@@ -117,21 +110,17 @@ function mulberry32(seedFunc) {
 function generate() {
   const entropia = [];
 
-  // Tempo
   entropia.push(Date.now().toString(36));
   entropia.push(performance.now().toString(36));
 
-  // Elementos da página
   const tags = [...document.querySelectorAll("*")]
     .map((e) => e.tagName)
     .join("");
   entropia.push(tags);
 
-  // Tamanho da página
   entropia.push(window.innerWidth);
   entropia.push(window.innerHeight);
 
-  // Posição do mouse (se tiver sido movido)
   document.addEventListener(
     "mousemove",
     (e) => {
@@ -140,12 +129,10 @@ function generate() {
     { once: true }
   );
 
-  // Um pouco de caos com random
   for (let i = 0; i < 10; i++) {
     entropia.push(Math.random().toString(36).slice(2));
   }
 
-  // Crypto randomness se possível
   let randomPart = "";
   if (window.crypto && crypto.getRandomValues) {
     const array = new Uint8Array(32);
@@ -155,16 +142,13 @@ function generate() {
       .join("");
   }
 
-  // Junta tudo e embaralha
   const baguncinha = entropia.join("|") + randomPart;
 
-  // Hash rápido estilo caseiro só pra condensar
   let hash = 0n;
   for (let i = 0; i < baguncinha.length; i++) {
     hash ^= BigInt(baguncinha.charCodeAt(i)) << BigInt(i % 64);
   }
 
-  // Gera a string final com base no hash + entropia
   let resultado = "";
   const base =
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
@@ -177,5 +161,5 @@ function generate() {
   }
 
 
-  return shuffle(resultado, "ma oe" + Math.random()).join("");
+  return shuffle(resultado, "meow" + Math.random()).join("");
 }

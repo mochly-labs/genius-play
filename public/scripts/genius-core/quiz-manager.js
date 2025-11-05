@@ -127,22 +127,19 @@ class QuizManager {
 
     const iconContainer = document.createElement("div");
     iconContainer.className =
-      "flex gap-4 mt-2 w-full justify-end items-end h-full"; // Ícones no canto superior direito
-    // Ícone de apagar
+      "flex gap-4 mt-2 w-full justify-end items-end h-full";
     const deleteIcon = document.createElement("i");
     deleteIcon.className =
       "fas fa-trash cursor-pointer text-transparent bg-gradient-to-br from-red-500 to-red-800 bg-clip-text p-2 rounded-full hover:scale-110 transition-transform";
     deleteIcon.addEventListener("click", () => this.deleteQuiz(quiz));
     iconContainer.appendChild(deleteIcon);
 
-    // Ícone de baixar
     const downloadIcon = document.createElement("i");
     downloadIcon.className =
       "fas fa-download cursor-pointer text-transparent bg-gradient-to-br from-blue-500 to-blue-800 bg-clip-text p-2 rounded-full hover:scale-110 transition-transform";
     downloadIcon.addEventListener("click", () => this.downloadQuiz(quiz));
     iconContainer.appendChild(downloadIcon);
 
-    // Ícone de play
     const playIcon = document.createElement("i");
     playIcon.className =
       "fas fa-play cursor-pointer text-transparent bg-gradient-to-br from-green-500 to-green-800 bg-clip-text p-2 rounded-full hover:scale-110 transition-transform";

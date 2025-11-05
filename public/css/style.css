@@ -6,6 +6,77 @@
   font-style: normal;
 }
 
+/* ===== Scrollbar Global ===== */
+* {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #6c5b7b00 #1a1a1a00; /* Firefox: thumb + track */
+}
+
+/* Chrome, Edge e Safari */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #1a1a1a; /* trilho */
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #ff7e5f, #6c5b7b, #50c9b7);
+  border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #f3a683, #6c5b7b, #50c9b7);
+}
+.no-blur *,
+.no-blur *::before,
+.no-blur *::after {
+  --tw-backdrop-blur: blur(0px) !important;
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor,
+      0 0 30px currentColor;
+  }
+  50% {
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor,
+      0 0 60px currentColor;
+  }
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 1.5s infinite ease-in-out;
+}
+
+.no-blur * {
+  backdrop-filter: unset !important;
+  filter: unset !important;
+}
+
+.logo-text {
+  animation: shine 3s ease-in-out infinite alternate;
+  background-size: 200% auto;
+}
+
+@keyframes shine {
+  0% {
+    background-position: 0% center;
+    filter: drop-shadow(0 0 2px #333) drop-shadow(0 0 5px currentColor);
+  }
+  50% {
+    background-position: 100% center;
+    filter: drop-shadow(0 0 6px #333) drop-shadow(0 0 10px currentColor);
+  }
+  100% {
+    background-position: 0% center;
+    filter: drop-shadow(0 0 3px #333) drop-shadow(0 0 6px currentColor);
+  }
+}
+
 /* === Base Resets and Globals === */
 * {
   user-select: none;
@@ -62,6 +133,7 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
+  z-index: -5 !important;
 }
 
 /* === Spinner === */
@@ -71,11 +143,21 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  23% { transform: rotate(85deg) scale(1.12); }
-  47% { transform: rotate(190deg) scale(0.88); }
-  68% { transform: rotate(275deg) scale(1.03); }
-  100% { transform: rotate(360deg) scale(1); }
+  0% {
+    transform: rotate(0deg);
+  }
+  23% {
+    transform: rotate(85deg) scale(1.12);
+  }
+  47% {
+    transform: rotate(190deg) scale(0.88);
+  }
+  68% {
+    transform: rotate(275deg) scale(1.03);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
 }
 
 /* === Scale + Animation Effects === */
@@ -85,9 +167,16 @@ body {
 }
 
 @keyframes zoom-in {
-  0% { transform: scale(0); opacity: 0; }
-  50% { transform: scale(1.025); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.025);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 #title-logo {
@@ -111,7 +200,10 @@ body {
 .slider {
   position: absolute;
   cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: rgba(255, 255, 255, 0.05); /* vidro escuro */
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -148,9 +240,15 @@ input:checked + .slider:before {
 
 /* === Gradient Animation === */
 @keyframes gradient-animation {
-  0% { background-position: 100% 0%; }
-  50% { background-position: 0% 0%; }
-  100% { background-position: 100% 0%; }
+  0% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 0%;
+  }
 }
 
 .animate-gradient {
@@ -158,22 +256,23 @@ input:checked + .slider:before {
   animation: gradient-animation 3s ease infinite;
 }
 
-/* === Glassy Button === */
-.glassy-button {
-  background-image: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.05),
-    rgba(255, 255, 255, 0)
-  );
-}
-
 /* === Minecraft Style Label === */
 @keyframes mc-bounce-zoom {
-  0%   { transform: rotate(25deg) scale(1.15) translateY(-3px); }
-  20%  { transform: rotate(25deg) scale(1.2) translateY(-4.5px); }
-  50%  { transform: rotate(25deg) scale(1.25) translateY(-6px); }
-  80%  { transform: rotate(25deg) scale(1.2) translateY(-4.5px); }
-  100% { transform: rotate(25deg) scale(1.15) translateY(-3px); }
+  0% {
+    transform: rotate(25deg) scale(1.15) translateY(-3px);
+  }
+  20% {
+    transform: rotate(25deg) scale(1.2) translateY(-4.5px);
+  }
+  50% {
+    transform: rotate(25deg) scale(1.25) translateY(-6px);
+  }
+  80% {
+    transform: rotate(25deg) scale(1.2) translateY(-4.5px);
+  }
+  100% {
+    transform: rotate(25deg) scale(1.15) translateY(-3px);
+  }
 }
 
 .mc-label {
@@ -219,8 +318,14 @@ input:checked + .slider:before {
 
 /* === +1 Animation === */
 @keyframes plusOne {
-  0%   { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-100%); }
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
 }
 
 .one-plus {
@@ -252,7 +357,108 @@ input:checked + .slider:before {
   white-space: nowrap;
 }
 
-
 .scoreboard-container:has(.team-box.hidden) {
   justify-content: center;
+}
+
+@keyframes winner-pulse {
+  0%,
+  100% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px 10px rgba(255, 215, 0, 0);
+  }
+}
+
+.winner {
+  animation: winner-pulse 2s infinite;
+  border: 4px solid #ffd700; /* Dourado */
+}
+
+.loser {
+  transform: scale(0.8);
+  opacity: 0.6;
+  filter: grayscale(50%);
+}
+
+#score-screen {
+  backdrop-filter: blur(8px);
+}
+
+.team-box {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* RADAR */
+/* Container principal do radar - precisa ser um círculo */
+.radar-container {
+  position: relative;
+  width: 300px; /* Tamanho de exemplo */
+  height: 300px; /* Tamanho de exemplo */
+  border-radius: 50%; /* Garante que o container seja redondo */
+  overflow: hidden; /* Esconde qualquer coisa que saia do círculo */
+  background-color: #0b1a23; /* Fundo escuro para contraste */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Fundo do radar com linhas (Grid) */
+.radar-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Usando gradientes cônicos e radiais para as linhas do grid */
+  background-image:
+    /* Círculos concêntricos */
+    repeating-radial-gradient(
+      circle at center,
+      rgba(52, 211, 153, 0.3) 0,
+      rgba(52, 211, 153, 0.3) 1px,
+      transparent 1px,
+      transparent 20%
+    ),
+    /* Linhas retas cruzando o centro */
+    repeating-conic-gradient(
+      from 0deg,
+      transparent 0deg 89deg,
+      rgba(52, 211, 153, 0.3) 89deg 90deg,
+      transparent 90deg 180deg
+    );
+  background-size: 100% 100%;
+}
+
+
+/* O scanner (a varredura) */
+.radar-scanner {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  /* O gradiente cônico cria o efeito de varredura natural */
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    transparent 70%, /* Ponto onde o rastro começa a desaparecer */
+    rgba(52, 211, 153, 0.7) 98%, /* Ponto mais intenso do brilho */
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: radar-sweep 3s linear infinite;
+  z-index: 1;
+}
+
+/* A animação agora só precisa girar o elemento */
+@keyframes radar-sweep {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

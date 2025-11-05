@@ -19,6 +19,7 @@ class Game {
     this.waiting = false;
     this.selectedTeam = null;
     this.questionTimeout = null;
+    this.questionStartTime = 0;
     this.endGame = false;
     this.debugSequence = [
       "ArrowUp",
@@ -146,11 +147,65 @@ class Game {
       },
       { label: "🏁 Finalizar Jogo", action: () => this.finalizarJogo() },
       {
+        label: "🔴 Disparar Botão 1 Virtualmente",
+        action: () => this.setSelected("left"),
+      },
+      {
+        label: "🔵 Disparar Botão 2 Virtualmente",
+        action: () => this.setSelected("right"),
+      },
+      {
         label: "📊 Mostrar Pontuação",
         action: () =>
           alert(
             `Pontuação atual:\nEquipe 1: ${this.scores.left}\nEquipe 2: ${this.scores.right}`
           ),
+      },
+      {
+        label: "➖ Remover ponto Equipe 1",
+        action: () => {
+          this.updateScore("left", -1);
+          this.selectedTeam = "left";
+          this.atualizarScore(false, -1);
+        },
+      },
+      {
+        label: "➖ Remover ponto Equipe 2",
+        action: () => {
+          this.updateScore("right", -1);
+          this.selectedTeam = "right";
+          this.atualizarScore(false, -1);
+        },
+      },
+      {
+        label: "➖ Remover ponto de Todos",
+        action: () => {
+          this.updateScore("left", -1);
+          this.updateScore("right", -1);
+          this.atualizarScore(false, -1);
+        },
+      },
+      {
+        label: "🔄 Resetar Pontuação Equipe 1",
+        action: () => {
+          this.scores.left = 0;
+          this.atualizarScore(false, 0);
+        },
+      },
+      {
+        label: "🔄 Resetar Pontuação Equipe 2",
+        action: () => {
+          this.scores.right = 0;
+          this.atualizarScore(false, 0);
+        },
+      },
+      {
+        label: "🔄 Resetar Pontuação Todas Equipes",
+        action: () => {
+          this.scores.left = 0;
+          this.scores.right = 0;
+          this.atualizarScore(false, 0);
+        },
       },
       { label: "❌ Cancelar", action: null },
     ];
@@ -211,10 +266,8 @@ class Game {
 
     let remainingTime = Math.ceil(time / 1000);
 
-    // 💫 Cancelamento
     let cancel = false;
 
-    // ⏳ Contagem visual
     if (timerText) {
       timerText.textContent = `${remainingTime}`;
       this.intermissionIntervalId = setInterval(() => {
@@ -226,7 +279,6 @@ class Game {
       }, 1000);
     }
 
-    // 🌈 Progresso
     if (intermissionTimer) {
       intermissionTimer.style.transition = "";
       intermissionTimer.style.width = "100%";
@@ -254,6 +306,11 @@ class Game {
   }
 
   async iniciarPergunta() {
+    if (this.currentQuestionIndex >= this.quiz.questions.length) {
+      return false;
+    }
+
+
     const timeout = parseInt(this.settings["release-time"]);
     await this.intermission(
       parseInt(this.settings["intermission-time"]) * 1000,
@@ -274,6 +331,7 @@ class Game {
         updateTeamSelect(0);
         clearInterval(intervalo);
         this.setTextoCentro("VALENDO!");
+        this.questionStartTime = Date.now();
         this.waiting = true;
         this.iniciarTimerBar(this.settings["round-time"]);
         this.questionTimeout = setTimeout(() => {
@@ -322,13 +380,27 @@ class Game {
   async verificarResposta(idSelecionado) {
     if (this.waiting || !this.selectedTeam) return;
 
+      const timeOfAnswer = Date.now();
+      const elapsedTimeInSeconds =
+        (timeOfAnswer - this.questionStartTime) / 1000;
+    if (this.questionTimeout) clearTimeout(this.questionTimeout);
+    
     const pergunta = this.getQuestion();
     const correta = pergunta.correct === idSelecionado;
 
-    const pontos = pergunta.worth;
+    let pontos = 0;
     this.showModal(null);
     if (this.questionTimeout) clearTimeout(this.questionTimeout);
     if (correta) {
+
+      const basePoints = pergunta.worth || 10;
+      const roundTime = this.settings["round-time"];
+      pontos = Math.max(
+        1,
+        Math.ceil(basePoints * (1 - elapsedTimeInSeconds / roundTime))
+      );
+
+
       if (this.settings["confetti-toggle"])
         confetti({
           particleCount: 100,
@@ -340,7 +412,7 @@ class Game {
       this.updateScore(this.selectedTeam, pontos);
       soundEffects.correct.play();
       await FlashModal.show({
-        text: "Acertou!",
+        text: "Acertou! (+" + pontos + " pontos)",
         type: "success",
       });
     } else {
@@ -376,13 +448,14 @@ class Game {
 
     const mostrarScore = this.settings["hide-score"] === "never";
     if (mostrarScore) {
+      soundEffects.score.play();
       this.atualizarScore(false, correta ? pontos : 0);
     }
 
     setTimeout(() => {
       const prox = this.nextQuestion();
       if (prox) this.iniciarPergunta();
-    }, 3000);
+    }, mostrarScore ? 3000 : 1);
   }
 
   nextQuestion() {
@@ -429,7 +502,7 @@ class Game {
         particleCount: 1000,
         startVelocity: 80,
         zIndex: 99999999,
-      }); // 🎉
+      });
 
     winnerText.classList.add("text-3xl", "font-bold");
 
@@ -441,8 +514,8 @@ class Game {
 
       winnerText.textContent =
         scoreRatio <= 0.5
-          ? "Empate! Falta estudo..."
-          : "Empate! Todo mundo arrasou!";
+          ? "Empate! Veredito final: Poucos acertos!"
+          : "Empate! Veredito final: Todo mundo arrasou!";
     } else {
       const winner =
         this.scores.left > this.scores.right
@@ -454,41 +527,36 @@ class Game {
           ? this.teamElements.redBox
           : this.teamElements.blueBox;
 
-      // Reorganizar layout
+
       this.teamElements.vs.classList.add("hidden");
       this.teamElements.scoreboard.classList.remove("flex-row");
       this.teamElements.scoreboard.classList.add("flex-col", "gap-4");
 
-      // Define a ordem no layout
-      winner.classList.add(
-        "animate-pulse",
-        "ring-4",
-        "ring-gray-300",
-        "shadow-xl",
-        "shadow-gray-500/50",
-        "transition-all",
-        "duration-700"
-      );
+      winner.classList.add("winner");
+      loser.classList.add("loser");
 
       winner.style.order = "0";
       loser.style.order = "1";
-      loser.style.transform = "scale(0.75)";
-      loser.style.opacity = "0.75";
-      loser.style.transition = "all 0.5s ease";
 
-      // Mensagem fofa de parabéns ✨
       const teamName = winner.querySelector("div[id$='name']").textContent;
-      winnerText.textContent = `Parabéns ${teamName}! 🎉`;
+      winnerText.innerHTML = `🎉 Parabéns, ${teamName}! 🎉`;
+
+      setTimeout(() => {
+        document.getElementById("winner-buttons").classList.remove("hidden");
+      }, 1500);
+
       soundEffects.win.play();
     }
-    if (this.settings["confetti-toggle"])
+    if (
+      this.settings["confetti-toggle"] &&
+      this.scores.left !== this.scores.right
+    ) {
       confetti({
         particleCount: 1000,
         startVelocity: 80,
         zIndex: 99999999,
       });
-    let ticks = 20;
-    if (this.settings["confetti-toggle"]) {
+      let ticks = 20;
       let interval;
       interval = setInterval(() => {
         ticks--;
@@ -505,7 +573,7 @@ class Game {
             y: 0.9,
           },
           ticks: 300,
-        }); // 🎉
+        });
       }, 200);
     }
   }
@@ -532,9 +600,9 @@ class Game {
     );
 
     if (this.selectedTeam === "right")
-      getById("team-red-container").appendChild(plusOneElement);
+      getById("team-red-box").appendChild(plusOneElement);
     if (this.selectedTeam === "left")
-      getById("team-blue-container").appendChild(plusOneElement);
+      getById("team-blue-box").appendChild(plusOneElement);
 
     setTimeout(() => {
       plusOneElement.remove();
@@ -622,9 +690,9 @@ class Game {
     this.showModal(this.modals.question);
     const img = getById("question-image");
     const texto = getById("question-text");
-
-    if (pergunta.image) {
-      img.src = pergunta.image;
+    console.log(pergunta)
+    if (pergunta.questionImage) {
+      img.src = pergunta.questionImage;
       img.classList.remove("hidden");
     } else {
       img.classList.add("hidden");
@@ -646,15 +714,11 @@ class Game {
   }
 
   atualizarScore(endgame = false, points) {
-    console.log(endgame, this.settings["hide-score"], points);
     if (this.settings["hide-score"] === "none") return;
     if (!endgame && this.settings["hide-score"] === "during-game") return;
-    soundEffects.score.play();
     getById("team-red-score").textContent = this.scores.right;
     getById("team-blue-score").textContent = this.scores.left;
 
-    getById("score-win-img").classList.toggle("hidden", !endgame);
-    console.log(getById("score-win-img").classList);
     getById("winner-buttons").classList.toggle("hidden", !endgame);
 
     this.showModal(this.modals.end);

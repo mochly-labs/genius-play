@@ -24,14 +24,14 @@
           <span class="text-green-400">
             <i class="fa-solid fa-graduation-cap mr-2"></i>
             <span
-              class="bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 bg-clip-text text-transparent"
+              class="bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 bg-clip-text text-transparent logo-text"
               >Genius</span
             >
+            <span
+              class="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent logo-text"
+              >Play!</span
+            >
           </span>
-          <span
-            class="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent"
-            >Play!</span
-          >
         </h1>
       </div>
       <h2 class="text-2xl text-white mb-4 hidden" id="loading-text">
@@ -75,7 +75,7 @@
       <script src="scripts/particles.js"></script>
       <div class="app min-h-full h-full w-full bg-transparent" id="game">
         <div
-          class="game-bg w-full h-full min-h-full fixed top-0 bottom-0 blur-md"
+          class="game-bg w-full h-full min-h-full fixed top-0 bottom-0 blur-sm"
           style="margin: 0; padding: 0"
         ></div>
         <div class="before-game max-w-full w-full h-full p-2 flex gap-5">
@@ -133,30 +133,19 @@
                   class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg"
                 >
                   <span class="font-semibold text-white">
-                    <i class="fa-solid fa-gamepad mr-2 text-purple-400"></i
-                    >Controlador Conectado:
-                  </span>
-                  <span class="text-red-400 font-bold" id="controller-connected"
-                    >Não</span
-                  >
-                </li>
-                <li
-                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg"
-                >
-                  <span class="font-semibold text-white">
                     <i class="fa-solid fa-code-branch mr-2 text-yellow-400"></i
                     >Versão:
                   </span>
-                  <span class="text-green-600 font-bold" id="game-version"
-                    ></span
-                  >
+                  <span
+                    class="text-green-600 font-bold"
+                    id="game-version"
+                  ></span>
                 </li>
               </ul>
 
               <div
                 class="mx-auto mt-24 w-fit px-8 py-6 bg-black/20 backdrop-blur-md rounded-md shadow-lg flex items-center justify-center flex-col gap-3"
               >
-                <p class="font-bold text-white">Calibrador</p>
                 <div class="flex items-center justify-center gap-6">
                   <!-- Lado Esquerdo -->
                   <div class="flex flex-col items-center">
@@ -179,6 +168,223 @@
                   </div>
                 </div>
               </div>
+            </div>
+            <div
+              class="control-section flex flex-col items-center justify-center h-full text-center hidden sect"
+              id="control-section"
+            >
+              <h2
+                class="text-2xl font-bold mb-6 shadow-xl bg-black/25 backdrop-blur-md text-white p-2 rounded-md px-4"
+              >
+                Modo da Controladora
+              </h2>
+              <ul class="space-y-4 w-3/4 max-w-xl mx-auto">
+                <li
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg"
+                >
+                  <span class="font-semibold text-white">
+                    <i class="fa-solid fa-wifi mr-2 text-cyan-400"></i>Modo de
+                    Conexão:
+                  </span>
+                  <select
+                    id="connection-mode"
+                    class="bg-black/25 backdrop-blur-md rounded-md p-2 w-4/6 text-white"
+                  >
+                    <option value="legacy" selected>
+                      Legacy (Arduino Serial)
+                    </option>
+                    <option value="modern">
+                      Moderna (Wi-Fi WS - Genius Play 2)
+                    </option>
+                  </select>
+                </li>
+
+                <li id="modern-mode-section" class="hidden">
+                  <div id="paired-device-view" class="hidden">
+                    <div
+                      class="text-center shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg mb-4"
+                    >
+                      <label
+                        class="font-semibold text-white text-lg flex items-center mb-3"
+                      >
+                        <i class="fa-solid fa-keyboard text-orange-400 mr-2"></i
+                        >Mapeamento de Teclas (Pinos)
+                      </label>
+                      <div class="grid grid-cols-3 gap-3">
+                        <div>
+                          <span
+                            class="font-medium text-white text-sm mb-1 block"
+                            >Esq.</span
+                          >
+                          <div
+                            id="left-pin-tags"
+                            class="flex flex-wrap gap-1 mb-2"
+                          ></div>
+                          <button
+                            type="button"
+                            id="showPinSelectorleft"
+                            class="bg-sky-600 hover:bg-sky-700 text-white font-semibold py-1 px-2 rounded text-xs flex items-center"
+                          >
+                            <i class="fa-solid fa-plus mr-1"></i>Pino
+                          </button>
+                        </div>
+                        <div>
+                          <span
+                            class="font-medium text-white text-sm mb-1 block"
+                            >Dir.</span
+                          >
+                          <div
+                            id="right-pin-tags"
+                            class="flex flex-wrap gap-1 mb-2"
+                          ></div>
+                          <button
+                            type="button"
+                            id="showPinSelectorright"
+                            class="bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-semibold py-1 px-2 rounded text-xs flex items-center"
+                          >
+                            <i class="fa-solid fa-plus mr-1"></i>Pino
+                          </button>
+                        </div>
+                        <div>
+                          <span
+                            class="font-medium text-white text-sm mb-1 block"
+                            >Reset</span
+                          >
+                          <div
+                            id="reset-pin-tags"
+                            class="flex flex-wrap gap-1 mb-2"
+                          ></div>
+                          <button
+                            type="button"
+                            id="showPinSelectorreset"
+                            class="bg-rose-600 hover:bg-rose-700 text-white font-semibold py-1 px-2 rounded text-xs flex items-center"
+                          >
+                            <i class="fa-solid fa-plus mr-1"></i>Pino
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Pin Select Modal -->
+                    <div
+                      id="pin-select-modal"
+                      class="fixed z-50 top-0 left-0 w-full h-full bg-black/60 flex items-center justify-center hidden"
+                    >
+                      <div
+                        class="bg-black rounded-xl p-6 w-80 flex flex-col items-center"
+                      >
+                        <h4 class="text-white text-lg font-bold mb-4">
+                          Selecionar Pino (0-50)
+                        </h4>
+                        <select
+                          id="pin-select-dropdown"
+                          class="w-full p-2 mb-6 rounded bg-gray-800 text-white text-lg"
+                        ></select>
+                        <div class="flex justify-between gap-4 w-full">
+                          <button
+                            id="addSelectedPinToFunction"
+                            class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded w-1/2"
+                          >
+                            Adicionar
+                          </button>
+                          <button
+                            id="closePinSelector"
+                            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded w-1/2"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="text-center shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg mb-4"
+                    >
+                      <div class="text-left space-y-2">
+                        <p class="text-lg">
+                          <i class="fa-solid fa-wifi text-green-400 mr-2"></i
+                          >Latência:
+                          <strong id="gp-control-latency" class="text-cyan-400"
+                            >100ms</strong
+                          >
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      class="text-center shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg"
+                    >
+                      <div class="text-left space-y-2 mb-4">
+                        <p class="text-lg">
+                          <i
+                            class="fa-solid fa-check-circle text-green-400 mr-2"
+                          ></i
+                          >Pareado com:
+                          <strong id="paired-device-name" class="text-cyan-400"
+                            >GeniusPlay-A4B2</strong
+                          >
+                        </p>
+                        <p class="text-sm text-gray-400">
+                          UUID:
+                          <span id="paired-device-uuid"
+                            >f4a1b2c3-d4e5-f6a7-b8c9-d0e1f2a3b4c5</span
+                          >
+                        </p>
+                      </div>
+                      <button
+                        id="disconnect-btn"
+                        class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-transform duration-200 hover:scale-105 w-full"
+                      >
+                        <i class="fa-solid fa-power-off mr-2"></i>Desconectar
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Visão quando NÃO PAREADO (Radar) -->
+                  <div
+                    id="unpaired-device-view"
+                    class="text-center shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg"
+                  >
+                    <h3 class="font-semibold mb-4 text-lg">
+                      Dispositivos na Rede
+                    </h3>
+                    <!-- Radar -->
+                    <div
+                      id="radar-container"
+                      class="relative w-48 h-48 mx-auto mb-4 border-2 border-dashed border-gray-600 rounded-full flex items-center justify-center radar-bg overflow-hidden"
+                    >
+                      <div
+                        class="absolute w-full h-full top-0 left-0 radar-scanner"
+                      ></div>
+                      <i
+                        class="fa-solid fa-wifi text-4xl text-white/50 z-10"
+                      ></i>
+                    </div>
+                    <p id="scan-status" class="text-gray-400 mb-4">
+                      Buscando por dispositivos...
+                    </p>
+                    <!-- Lista de Dispositivos Encontrados -->
+                    <div id="devices-list" class="space-y-3 text-left">
+                      <!-- Dispositivos simulados aparecerão aqui -->
+                    </div>
+                  </div>
+                </li>
+
+                <li id="connect-state-section">
+                  <div
+                    class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg"
+                  >
+                    <span class="font-semibold text-white">
+                      <i class="fa-solid fa-gamepad mr-2 text-purple-400"></i
+                      >Controlador Conectado:
+                    </span>
+                    <span
+                      class="text-red-600 font-bold"
+                      id="controller-connected"
+                      >Não</span
+                    >
+                  </div>
+                </li>
+              </ul>
             </div>
 
             <div
@@ -537,6 +743,20 @@
                   </label>
                 </div>
                 <div
+                  class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg"
+                >
+                  <span class="font-semibold text-white">
+                    <i
+                      class="fa-solid fa-feather-pointed mr-2 text-[#FFB400]"
+                    ></i
+                    >Modo Lite:
+                  </span>
+                  <label class="switch">
+                    <input type="checkbox" id="lite-mode-toggle" />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div
                   <div
                   class="flex items-center justify-between shadow-xl bg-black/25 backdrop-blur-md p-4 rounded-lg"
                 >
@@ -596,14 +816,17 @@
                     <i class="fa-solid fa-info-circle mr-2 text-[#A8E6CF]"></i
                     >Versão do Jogo:
                   </span>
-                  <span class="text-green-600 font-bold" id="version-fixed"></span>
+                  <span
+                    class="text-green-600 font-bold"
+                    id="version-fixed"
+                  ></span>
                 </div>
 
                 <!-- Actions -->
                 <h3 class="text-lg font-bold text-white mt-6 mb-2">Ações</h3>
                 <div class="flex justify-between gap-4">
                   <button
-                    class="clear-data-btn text-white font-semibold py-3 px-4 rounded-xl w-full border-2 shadow-xl bg-black/30 backdrop-blur-md border-rose-500 hover:bg-rose-600/80 hover:border-rose-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                    class="clear-data-btn text-white font-semibold py-3 px-4 rounded-md w-full shadow-xl bg-black/30 backdrop-blur-md hover:bg-rose-600/80 transition-all duration-200 hover:scale-[1.03] active:scale-95"
                     onclick="clearGameData()"
                   >
                     <i class="fa-solid fa-trash mr-2 text-rose-200"></i>Limpar
@@ -611,7 +834,7 @@
                   </button>
 
                   <button
-                    class="reload-btn text-white font-semibold py-3 px-4 rounded-xl w-full border-2 shadow-xl bg-black/30 backdrop-blur-md border-sky-500 hover:bg-sky-600/80 hover:border-sky-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                    class="reload-btn text-white font-semibold py-3 px-4 rounded-md w-full shadow-xl bg-black/30 backdrop-blur-md hover:bg-sky-600/80 transition-all duration-200 hover:scale-[1.03] active:scale-95"
                     onclick="reloadGame()"
                   >
                     <i class="fa-solid fa-rotate-right mr-2 text-sky-200"></i
@@ -701,7 +924,7 @@
                         class="fa-solid fa-graduation-cap text-4xl text-emerald-500"
                       ></i>
                       <span
-                        class="bg-gradient-to-r from-emerald-500 via-yellow-600 to-orange-600 bg-clip-text text-transparent"
+                        class="bg-gradient-to-r from-emerald-500 via-yellow-600 to-orange-600 bg-clip-text text-transparent logo-text"
                       >
                         Genius
                       </span>
@@ -716,28 +939,34 @@
 
                 <div class="menu flex flex-col gap-4 mt-12 w-full max-w-md">
                   <button
-                    class="home-btn glassy-button text-white font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-2xl bg-black/20 backdrop-blur-xl border-sky-500 hover:bg-sky-600/80 hover:border-sky-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                    class="home-btn glassy-button text-white font-semibold py-3 px-5 rounded-md w-full shadow-2xl bg-black/20 backdrop-blur-xl hover:bg-sky-600/80 transition-all duration-200 hover:scale-[1.03] active:scale-95 hover:rotate-1"
                   >
-                    <i class="fa-solid fa-house mr-3 text-sky-300"></i>Página
-                    Inicial
+                    <i class="fa-solid fa-house mr-3 text-sky-300"></i>Home
                   </button>
 
                   <button
-                    class="uploader-btn glassy-button text-white font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-2xl bg-black/20 backdrop-blur-xl border-indigo-500 hover:bg-indigo-600/80 hover:border-indigo-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                    class="controller-btn glassy-button text-white font-semibold py-3 px-5 rounded-md w-full shadow-2xl bg-black/20 backdrop-blur-xl hover:bg-fuchsia-600/80 transition-all duration-200 hover:scale-[1.03] active:scale-95 hover:rotate-1"
+                  >
+                    <i class="fa-solid fa-wifi mr-3 text-fuchsia-300"></i
+                    >Controladora
+                  </button>
+
+                  <button
+                    class="uploader-btn glassy-button text-white font-semibold py-3 px-5 rounded-md w-full shadow-2xl bg-black/20 backdrop-blur-xl hover:bg-indigo-600/80 transition-all duration-200 hover:scale-[1.03] active:scale-95 hover:rotate-1"
                   >
                     <i class="fa-solid fa-brain mr-3 text-indigo-300"></i
                     >Questionários
                   </button>
 
                   <button
-                    class="builder-btn glassy-button text-white font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-2xl bg-black/20 backdrop-blur-xl border-purple-500 hover:bg-purple-600/80 hover:border-purple-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                    class="builder-btn glassy-button text-white font-semibold py-3 px-5 rounded-md w-full shadow-2xl bg-black/20 backdrop-blur-xl hover:bg-purple-600/80 transition-all duration-200 hover:scale-[1.03] active:scale-95 hover:rotate-1"
                   >
                     <i class="fa-solid fa-wrench mr-3 text-purple-300"></i
-                    >Editor
+                    >Criador
                   </button>
 
                   <button
-                    class="store-btn glassy-button text-gray-300 font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-md bg-black/30 backdrop-blur-xl border-gray-500 cursor-not-allowed opacity-50 hidden"
+                    class="store-btn glassy-button text-gray-300 font-semibold py-3 px-5 rounded-md w-full shadow-md bg-black/30 backdrop-blur-xl cursor-not-allowed opacity-50 hidden"
                     disabled
                   >
                     <i class="fa-solid fa-users mr-3 text-gray-400"></i
@@ -745,7 +974,7 @@
                   </button>
 
                   <button
-                    class="addons-btn glassy-button text-gray-300 font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-md bg-black/30 backdrop-blur-xl border-gray-500 cursor-not-allowed opacity-50 hidden"
+                    class="addons-btn glassy-button text-gray-300 font-semibold py-3 px-5 rounded-md w-full shadow-md bg-black/30 backdrop-blur-xl cursor-not-allowed opacity-50 hidden"
                     disabled
                   >
                     <i class="fa-solid fa-puzzle-piece mr-3 text-gray-400"></i
@@ -753,14 +982,14 @@
                   </button>
 
                   <button
-                    class="settings-btn glassy-button text-white font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-2xl bg-black/20 backdrop-blur-xl border-teal-500 hover:bg-teal-600/80 hover:border-teal-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                    class="settings-btn glassy-button text-white font-semibold py-3 px-5 rounded-md w-full shadow-2xl bg-black/20 backdrop-blur-xl hover:bg-teal-600/80 transition-all duration-200 hover:scale-[1.03] active:scale-95 hover:rotate-1"
                   >
                     <i class="fa-solid fa-sliders mr-3 text-teal-300"></i
-                    >Preferências
+                    >Configurações
                   </button>
 
                   <button
-                    class="quit-btn glassy-button text-white font-semibold py-3 px-5 rounded-2xl w-full border-2 shadow-2xl bg-black/20 backdrop-blur-xl border-rose-500 hover:bg-rose-600/80 hover:border-rose-600 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                    class="quit-btn glassy-button text-white font-semibold py-3 px-5 rounded-md w-full shadow-2xl bg-black/20 backdrop-blur-xl hover:bg-rose-600/80 transition-all duration-200 hover:scale-[1.03] active:scale-95 hover:rotate-1"
                   >
                     <i class="fa-solid fa-power-off mr-3 text-rose-300"></i
                     >Encerrar
@@ -774,9 +1003,14 @@
                       <i class="fa-solid fa-user text-white text-xl"></i>
                     </div>
                     <div class="profile-info text-white">
-                      <h3 class="text-lg font-bold" id="username-display">Convidado</h3>
+                      <h3 class="text-lg font-bold" id="username-display">
+                        Convidado
+                      </h3>
                       <p class="text-xs text-gray-400">
-                        <button class="text-white font-semibold py-1 px-2 rounded-md bg-black/20 backdrop-blur-md border-2 border-white/20 hover:bg-white/10 transition-all duration-200 hover:scale-[1.03] active:scale-95" id="login-btn">
+                        <button
+                          class="text-white font-semibold py-1 px-2 rounded-md bg-black/20 backdrop-blur-md border-2 border-white/20 hover:bg-white/10 transition-all duration-200 hover:scale-[1.03] active:scale-95"
+                          id="login-btn"
+                        >
                           <i class="fa-solid fa-user-plus mr-2"></i>Entrar
                         </button>
                         <span id="institution-display" class="hidden"></span>
@@ -836,19 +1070,19 @@
           >Genius Play!
           <span
             class="inline bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500"
-            >Alpha</span
+            >Beta</span
           ></span
         >
       </div>
       <div
-        class="flex flex-col items-center justify-center p-24 shadow-xl bg-black/25 backdrop-blur-xl rounded-lg"
+        class="flex flex-col items-center justify-center p-28 shadow-xl bg-black/50 backdrop-blur-xl rounded w-5/6 h-5/6 m-8"
         id="start-screen"
       >
         <button
-          class="absolute top-8 left-8 text-white cursor-pointer"
-          onclick="document.querySelector('#ingame').remove(); document.querySelector('#loading-screen').style.display = '';document.querySelector('#loading-screen').style.opacity = '1'; localStorage.removeItem('InGame'); location.reload();"
+          class="absolute top-8 right-8 text-white cursor-pointer"
+          onclick="document.querySelector('#ingame').remove(); document.querySelector('#loading-screen').style.display = '';document.querySelector('#loading-screen').style.opacity = '1'; localStorage.removeItem('InGame'); localStorage.removeItem('questionary'); setTimeout(() => { location.reload(); }, 250);"
         >
-          <i class="fa-solid fa-arrow-left text-2xl"></i>
+          <i class="fa-solid fa-xmark text-2xl"></i>
         </button>
         <div class="logo mb-8">
           <h1 class="text-4xl text-white">
@@ -929,103 +1163,115 @@
       <!-- Score/Winner Screen -->
       <div
         id="score-screen"
-        class="fixed inset-0 shadow-xl bg-black/80 flex flex-col items-center hidden justify-center"
+        class="fixed inset-0 bg-neutral-900/20 flex flex-col items-center justify-center hidden"
       >
-        <div id="score-win-img">
-          <img src="/img/win.png" class="w-auto h-20" />
+        <div class="text-center">
+          <h1 class="text-6xl text-white font-bold mb-4">Placar</h1>
+          <h2 id="winner-text" class="text-4xl text-yellow-400 font-bold mb-12">
+            Wow... parece divertido!
+          </h2>
         </div>
-        <h1 class="text-6xl text-white font-bold mb-6 mt-12">Pontuação</h1>
+
         <div
-          class="scoreboard-container flex items-center justify-center gap-6 w-full max-w-4xl"
+          class="scoreboard-container w-full max-w-4xl flex items-center justify-center gap-8"
           id="scoreboard-container"
         >
+          <!-- Equipe Azul -->
           <div
-            class="team-box flex flex-col items-center justify-center bg-black/25 p-6 rounded-lg backdrop-blur-xl shadow-xl text-white w-1/2 gap-2 transition-all duration-500 ease-in-out"
+            class="team-box flex flex-col items-center justify-center p-8 rounded-2xl shadow-lg text-white w-1/2 transition-all duration-500 ease-in-out"
             id="team-blue-box"
           >
-            <div id="team-blue-score" class="text-4xl font-bold text-gray-300">
+            <div class="text-5xl font-bold text-gray-200" id="team-blue-score">
               0
             </div>
             <div
+              class="text-2xl font-semibold text-blue-400"
               id="team-blue-name"
-              class="text-xl font-semibold text-blue-400"
             >
               Equipe 2
             </div>
           </div>
 
           <!-- VS -->
-          <div class="vs text-3xl font-bold text-white select-none" id="vs-box">
+          <div
+            class="vs text-4xl font-extrabold text-white select-none"
+            id="vs-box"
+          >
             VS
           </div>
 
+          <!-- Equipe Vermelha -->
           <div
-            class="team-box flex flex-col items-center justify-center bg-black/25 p-6 rounded-lg backdrop-blur-xl shadow-xl text-white w-1/2 gap-2 transition-all duration-500 ease-in-out"
+            class="team-box flex flex-col items-center justify-center p-8 rounded-2xl shadow-lg text-white w-1/2 transition-all duration-500 ease-in-out"
             id="team-red-box"
           >
-            <div id="team-red-score" class="text-4xl font-bold text-gray-300">
+            <div class="text-5xl font-bold text-gray-200" id="team-red-score">
               0
             </div>
-            <div id="team-red-name" class="text-xl font-semibold text-red-400">
+            <div class="text-2xl font-semibold text-red-400" id="team-red-name">
               Equipe 1
             </div>
           </div>
         </div>
 
-        <h2
-          id="winner-text"
-          class="text-3xl text-white font-bold mt-8 bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 bg-clip-text text-transparent"
-        >
-          Parabéns por chegarem até aqui!
-        </h2>
-        <div class="mt-8 flex gap-8 hidden" id="winner-buttons">
+        <div class="mt-12 flex gap-8 hidden" id="winner-buttons">
           <button
-            class="text-white font-bold py-3 px-8 rounded-full bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 shadow-lg hover:scale-110 transition-transform duration-300"
+            class="text-white font-bold py-3 px-8 rounded-full bg-gradient-to-r from-green-500 to-teal-500 shadow-lg hover:scale-110 transition-transform duration-300"
             onclick="window.location.reload()"
           >
             <i class="fa-solid fa-rotate-right mr-2"></i>Reiniciar Jogo
           </button>
           <button
-            class="text-white font-bold py-3 px-8 rounded-full bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 shadow-lg hover:scale-110 transition-transform duration-300"
+            class="text-white font-bold py-3 px-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg hover:scale-110 transition-transform duration-300"
             onclick="localStorage.removeItem('InGame'); location.reload();"
           >
-            <i class="fa-solid fa-house mr-2"></i>Voltar à Página Inicial
+            <i class="fa-solid fa-house mr-2"></i>Voltar à Home
           </button>
         </div>
+        <canvas
+          id="confetti-canvas"
+          class="absolute top-0 left-0 w-full h-full pointer-events-none"
+        ></canvas>
       </div>
       <div
         class="question-container flex flex-col items-center justify-center p-8 shadow-xl bg-black/25 backdrop-blur-md rounded-lg w-full h-full hidden"
         id="question-screen"
       >
-        <div class="w-full h-full flex flex-col justify-center align-center">
-          <div id="question-image-container" class="mb-6">
+        <div
+          class="flex flex-col justify-center items-center bg-black/25 shadow-xl backdrop-blur-xl py-6 px-2 sm:px-4 md:px-8 lg:px-12 rounded-lg w-full max-w-full box-border overflow-x-auto overflow-y-auto"
+          style="max-height: 100%;"
+        >
+          <div id="question-image-container" class="mb-4 w-full flex flex-col justify-center items-center max-w-full">
             <img
               id="question-image"
               src="/img/placeholder.webp"
               alt="Imagem da Pergunta"
-              class="max-w-full max-h-64 rounded-lg"
+              class="max-w-full max-h-64 rounded-lg self-center object-contain"
+              style="width: 100%; height: auto;"
             />
           </div>
           <h2
             id="question-text"
-            class="text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center mb-24"
+            class="text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center mb-8 break-words"
+            style="word-break: break-word; max-width: 100%;"
           >
             Pergunta Desconhecida
           </h2>
           <div
             id="alternatives-container"
-            class="w-full max-w-full flex gap-5 justify-center items-center flex-wrap"
+            class="flex gap-3 sm:gap-4 md:gap-5 justify-center items-center flex-wrap w-full max-w-full overflow-x-auto"
+            style="box-sizing: border-box;"
           ></div>
         </div>
 
         <!-- Team Select -->
         <div
-          class="team-selection flex items-center justify-between w-full max-w-full mx-20 shadow-xl bg-black/25 backdrop-blur-xl py-6 px-12 rounded-lg mt-8 mb-4 min-h-7xl"
+          class="team-selection flex items-center justify-between w-full max-w-full mx-20 shadow-xl bg-black/25 backdrop-blur-xl py-6 px-12 rounded-lg mt-8 mb-4 min-h-8xl max-h-8xl"
           id="team-selection"
         >
           <div
             id="team-red-arrow"
-            class="team-arrow text-red-500 text-7xl font-bold py-2 px-4 animate-glow-pulse"
+            class="team-arrow text-red-500 text-5xl font-bold animate-glow-pulse"
             style="color: var(--team-red-color)"
           >
             <i class="fa-solid fa-arrow-left"></i>
@@ -1035,41 +1281,21 @@
           </div>
           <div
             id="team-blue-arrow"
-            class="team-arrow text-blue-500 text-7xl font-bold py-2 px-4 animate-glow-pulse"
+            class="team-arrow text-blue-500 text-5xl font-bold animate-glow-pulse"
             style="color: var(--team-blue-color)"
           >
             <i class="fa-solid fa-arrow-right"></i>
           </div>
-
-          <style>
-            @keyframes glowPulse {
-              0%,
-              100% {
-                text-shadow: 0 0 10px currentColor, 0 0 20px currentColor,
-                  0 0 30px currentColor;
-                transform: scale(1);
-              }
-              50% {
-                text-shadow: 0 0 20px currentColor, 0 0 40px currentColor,
-                  0 0 60px currentColor;
-                transform: scale(1.2);
-              }
-            }
-
-            .animate-glow-pulse {
-              animation: glowPulse 1.5s infinite ease-in-out;
-            }
-          </style>
         </div>
 
         <!-- Timer -->
         <div
           id="timer-container"
-          class="timer-container fixed bottom-0 left-0 w-full h-4 shadow-xl bg-black/25 overflow-hidden flex justify-center align-center items-center rounded-lg"
+          class="timer-container fixed bottom-0 left-0 w-full h-4 shadow-xl bg-black/25 overflow-hidden flex"
         >
           <div
             id="timer-progress"
-            class="h-full rounded-lg"
+            class="h-full rounded-sm"
             style="
               background: linear-gradient(
                 to right,
@@ -1095,4 +1321,5 @@
   <script src="scripts/genius-core/quiz-manager.js"></script>
   <script src="scripts/genius-core/file-uploader.js"></script>
   <script src="scripts/genius-core/main.js"></script>
+  <script src="scripts/genius-core/pairing.js"></script>
 </html>

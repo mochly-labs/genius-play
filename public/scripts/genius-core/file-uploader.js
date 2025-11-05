@@ -1,19 +1,9 @@
-/**
- * Handles file uploads including validation and WebSocket communication
- */
 const FileUploader = {
-  /**
-   * Handles file selection event
-   * @param {Event} event - File input change event
-   */
   handleFileSelection(event) {
     const fileName = event.target.files[0]?.name || "No file selected";
     this.uploadFile();
   },
 
-  /**
-   * Uploads selected file via WebSocket
-   */
   uploadFile() {
     const fileInput = document.getElementById("file-input");
     if (!fileInput.files.length) {
@@ -40,10 +30,6 @@ const FileUploader = {
     reader.readAsText(file);
   },
 
-  /**
-   * Sends file data via WebSocket
-   * @param {string} fileData - File content to send
-   */
   async sendFileViaWebSocket(fileData) {
     if (!this.socket || this.socket.socket.readyState !== WebSocket.OPEN) {
       this.showToast("WebSocket not connected!", "error");
@@ -83,20 +69,12 @@ const FileUploader = {
     });
   },
 
-  /**
-   * Shows a toast notification
-   * @param {string} message - Message to display
-   * @param {string} type - Toast type ('success' or 'error')
-   */
   showToast(message, type) {
     if (typeof Toasty?.show === "function") {
       Toasty.show(message, { type, duration: 3000 });
     }
   },
 
-  /**
-   * Initializes file upload handler
-   */
   initialize(wsManager) {
     this.socket = wsManager;
     const fileInput = document.getElementById("file-input");

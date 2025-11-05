@@ -1,16 +1,10 @@
-/**
- * Media manager for handling wallpapers and music in IndexedDB
- */
+
 const MediaManager = {
   DB_NAME: "MediaDB",
   STORE_WALLPAPER: "wallpaper",
   STORE_MUSIC: "music",
   KEY: "currentMedia",
 
-  /**
-   * Opens and returns the database with schema setup
-   * @returns {Promise<IDBDatabase>}
-   */
   async getDB() {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.DB_NAME, 1);
@@ -30,12 +24,6 @@ const MediaManager = {
     });
   },
 
-  /**
-   * Saves media data to specified store
-   * @param {string} storeName - Store to save to
-   * @param {string} base64Data - Media data to save
-   * @returns {Promise<void>}
-   */
   async saveMedia(storeName, base64Data) {
     try {
       const db = await this.getDB();
@@ -49,11 +37,6 @@ const MediaManager = {
     }
   },
 
-  /**
-   * Loads media data from specified store
-   * @param {string} storeName - Store to load from
-   * @returns {Promise<string|null>}
-   */
   async loadMedia(storeName) {
     try {
       const db = await this.getDB();
@@ -71,7 +54,6 @@ const MediaManager = {
     }
   },
 
-  // Convenience methods
   saveWallpaper: function (base64Data) {
     return this.saveMedia(this.STORE_WALLPAPER, base64Data);
   },
@@ -86,9 +68,6 @@ const MediaManager = {
   },
 };
 
-
-
-// ADDON: SOUNDS
 
 let soundEffects = {
   click: new Audio("/audio/click.mp3"),
