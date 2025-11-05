@@ -87,7 +87,6 @@ func initWS() {
 				return
 			}
 			defer func() {
-				// Recover from a panic during connection close
 				defer func() {
 					if r := recover(); r != nil {
 						log.Printf("Recovered in conn.Close: %v", r)
@@ -102,7 +101,6 @@ func initWS() {
 				"password": password,
 			}
 
-			// Setup keepalive
 			keepalive := time.NewTimer(30 * time.Second)
 
 			for {
@@ -173,7 +171,6 @@ func initWS() {
 							latestVersion = ver
 						}
 					case "ping":
-						// No-op
 					default:
 						if uuid, ok := msg["uuid"].(string); ok {
 							isonline = true
@@ -184,7 +181,6 @@ func initWS() {
 								statusItemG.SetTitle("Status: Online (Sem Arduino)")
 								setStatus("Online (Sem Arduino)")
 							}
-							// Protect wsjson.Write
 							func() {
 								defer func() {
 									if r := recover(); r != nil {

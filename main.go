@@ -10,6 +10,7 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -61,7 +62,8 @@ func main() {
 	gp := New(8001, 44444)
 
 	dataJsonPath := filepath.Join(geniusPlayPath, "data.json")
-
+	NoPanic()
+	
 	func() {
 		file, err := os.Open(dataJsonPath)
 		if err == nil {
@@ -409,3 +411,29 @@ func broadcastToWebSocketClients(event string, data interface{}) {
 		}
 	}
 }
+
+
+func NoPanic() {
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				logfile, err := os.OpenFile("gppanic.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+				if err == nil {
+					defer logfile.Close()
+					logLine := fmt.Sprintf("[%s] PANIC: %v\n%s\n", time.Now().Format(time.RFC3339), r, getStack())
+					logfile.WriteString(logLine)
+				}
+				
+				log.Printf("[PANIC] %v\n%s\n", r, getStack())
+			}
+		}()
+		select {}
+	}()
+}
+
+func getStack() string {
+	buf := make([]byte, 4096)
+	n := runtime.Stack(buf, true)
+	return string(buf[:n])
+}
+

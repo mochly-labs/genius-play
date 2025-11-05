@@ -99,9 +99,9 @@ class Game {
     const modal = document.createElement("div");
     modal.style.background = "#111";
     modal.style.color = "#0f0";
-    modal.style.padding = "20px";
+    modal.style.padding = "10px";
     modal.style.border = "2px solid lime";
-    modal.style.borderRadius = "12px";
+    modal.style.borderRadius = "4px";
     modal.style.display = "flex";
     modal.style.flexDirection = "column";
     modal.style.gap = "10px";
@@ -213,11 +213,11 @@ class Game {
     for (const { label, action } of options) {
       const btn = document.createElement("button");
       btn.textContent = label;
-      btn.style.padding = "10px";
+      btn.style.padding = "5px";
       btn.style.background = "#222";
       btn.style.border = "1px solid #0f0";
       btn.style.color = "#0f0";
-      btn.style.borderRadius = "6px";
+      btn.style.borderRadius = "2px";
       btn.style.cursor = "pointer";
       btn.onmouseenter = () => (btn.style.background = "#333");
       btn.onmouseleave = () => (btn.style.background = "#222");
