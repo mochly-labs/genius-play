@@ -99,11 +99,15 @@ func initWS() {
 					})
 				}
 			case "version":
-				log.Println("Server version:", msg["version"])
-				broadcastToWebSocketClients("version", map[string]interface{}{
-					"version": msg["version"],
-				})
-				latestVersion = msg["version"].(string)
+				if version, ok := msg["version"].(string); ok {
+					latestVersion = version
+					log.Println("Server version:", version)
+					broadcastToWebSocketClients("version", map[string]interface{}{
+						"version": version,
+					})
+				} else {
+					log.Println("Server version not available or invalid:", msg["version"])
+				}
 			case "ping":
 			default:
 				if uuid, ok := msg["uuid"].(string); ok {
