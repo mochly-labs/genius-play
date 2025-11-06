@@ -24,16 +24,28 @@ import (
 //go:embed public/*
 var publicFS embed.FS
 
+type SafeConnection struct {
+	conn *websocket.Conn
+	mu   sync.Mutex
+}
+
+func (sc *SafeConnection) WriteJSON(v interface{}) error {
+	sc.mu.Lock()
+	defer sc.mu.Unlock()
+	return sc.conn.WriteJSON(v)
+}
+
 var (
-	islegacy         = true
-	isOnline         = false
-	wsClients        = make(map[*websocket.Conn]bool)
-	wsClientsMutex   = &sync.Mutex{}
-	currentStatus    = &DeviceStatus{Online: false}
-	ctx, cancel      = context.WithCancel(context.Background())
-	userHome, _      = os.UserHomeDir()
-	geniusPlayPath   = filepath.Join(userHome, "GeniusPlay")
+	islegacy           = true
+	isOnline           = false
+	wsClients          = make(map[*SafeConnection]bool)
+	wsClientsMutex     = &sync.Mutex{}
+	currentStatus      = &DeviceStatus{Online: false}
+	ctx, cancel        = context.WithCancel(context.Background())
+	userHome, _        = os.UserHomeDir()
+	geniusPlayPath     = filepath.Join(userHome, "GeniusPlay")
 	geniusPlayDataPath = filepath.Join(geniusPlayPath, "data")
+	isConnected        = false
 )
 
 type LogMessage struct {
@@ -69,7 +81,7 @@ func main() {
 	router := setupRouter(gp, pairer)
 	go startHTTPServer(router)
 
-	log.Println("[Pareamento] [v2] Sistema de pareamento OK!")
+	log.Println("[Pareamento] [Legacy] Bom Proveito!")
 	go app()
 	go initWS()
 	select {}
@@ -145,14 +157,17 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request, upgrader *websocket
 	}
 	defer conn.Close()
 
-	addClient(conn)
-	defer removeClient(conn)
+	safeConn := &SafeConnection{conn: conn}
 
-	if err := sendInitialData(conn, gp); err != nil {
+	addClient(safeConn)
+	defer removeClient(safeConn)
+
+	if err := sendInitialData(safeConn, gp); err != nil {
+		log.Println("Error sending initial data:", err)
 		return
 	}
 
-	go keepAlive(conn)
+	go keepAlive(safeConn)
 
 	for {
 		var msg map[string]interface{}
@@ -162,48 +177,51 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request, upgrader *websocket
 			}
 			break
 		}
-		handleWebSocketMessage(conn, msg, gp, pairer)
+		handleWebSocketMessage(safeConn, msg, gp, pairer)
 	}
 }
-func addClient(conn *websocket.Conn) {
+func addClient(conn *SafeConnection) {
 	wsClientsMutex.Lock()
 	defer wsClientsMutex.Unlock()
 	wsClients[conn] = true
 }
 
-func removeClient(conn *websocket.Conn) {
+func removeClient(conn *SafeConnection) {
 	wsClientsMutex.Lock()
 	defer wsClientsMutex.Unlock()
 	delete(wsClients, conn)
 }
 
-func sendInitialData(conn *websocket.Conn, gp *GeniusPlay) error {
+func sendInitialData(conn *SafeConnection, gp *GeniusPlay) error {
 	if err := conn.WriteJSON(map[string]string{"type": "uuid", "uuid": uuid.New().String()}); err != nil {
 		return err
 	}
 	return conn.WriteJSON(map[string]interface{}{"type": "state", "data": gp.GetState()})
 }
 
-func keepAlive(conn *websocket.Conn) {
-	ticker := time.NewTicker(10 * time.Second) // Increased interval for efficiency
+func keepAlive(conn *SafeConnection) {
+	ticker := time.NewTicker(3 * time.Second)
 	defer ticker.Stop()
 	for range ticker.C {
 		wsClientsMutex.Lock()
-		// Check if connection still exists before writing
 		if _, ok := wsClients[conn]; !ok {
 			wsClientsMutex.Unlock()
 			return
 		}
-		err := conn.WriteJSON(map[string]string{"type": "keepalive"})
 		wsClientsMutex.Unlock()
-		if err != nil {
+
+		if err := conn.WriteJSON(map[string]string{"type": "keepalive"}); err != nil {
 			log.Println("Error sending keepalive:", err)
+			return
+		}
+		if err := conn.WriteJSON(map[string]interface{}{"type": "handshake", "status": isConnected}); err != nil {
+			log.Println("Error sending status:", err)
 			return
 		}
 	}
 }
 
-func handleWebSocketMessage(conn *websocket.Conn, msg map[string]interface{}, gp *GeniusPlay, pairer *ArduinoPairer) {
+func handleWebSocketMessage(conn *SafeConnection, msg map[string]interface{}, gp *GeniusPlay, pairer *ArduinoPairer) {
 	msgType, ok := msg["type"].(string)
 	if !ok {
 		log.Println("Invalid message format: type is not a string")
@@ -221,7 +239,7 @@ func handleWebSocketMessage(conn *websocket.Conn, msg map[string]interface{}, gp
 	case "upload":
 		handleUpload(conn, msg)
 	case "handshake":
-		conn.WriteJSON(map[string]interface{}{"type": "handshake", "status": isOnline})
+		conn.WriteJSON(map[string]interface{}{"type": "handshake", "status": isConnected})
 		if isLoggedIn {
 			conn.WriteJSON(map[string]interface{}{"type": "auth", "data": map[string]interface{}{
 				"user":   userData,
@@ -251,6 +269,7 @@ func handleWebSocketMessage(conn *websocket.Conn, msg map[string]interface{}, gp
 	case "config":
 		handleConfig(msg, gp)
 	case "keepalive":
+		break
 	case "unpair":
 		gp.UnpairDevice()
 	case "delete":
@@ -265,7 +284,7 @@ func handleWebSocketMessage(conn *websocket.Conn, msg map[string]interface{}, gp
 		log.Printf("Unknown message type received: %s\n", msgType)
 	}
 }
-func handleUpload(conn *websocket.Conn, msg map[string]interface{}) {
+func handleUpload(conn *SafeConnection, msg map[string]interface{}) {
 	data, ok := msg["data"].(string)
 	if !ok {
 		conn.WriteJSON(map[string]interface{}{"type": "upload", "success": false, "error": "Invalid data format"})
@@ -303,7 +322,7 @@ func handleModeChange(msg map[string]interface{}, gp *GeniusPlay) {
 	}
 }
 
-func handleScan(conn *websocket.Conn, gp *GeniusPlay) {
+func handleScan(conn *SafeConnection, gp *GeniusPlay) {
 	log.Println("Command received: discover")
 	devices, err := gp.DiscoverDevices()
 	if err != nil {
@@ -323,7 +342,7 @@ func handleScan(conn *websocket.Conn, gp *GeniusPlay) {
 
 	conn.WriteJSON(map[string]interface{}{"type": "scanresult", "data": devices})
 }
-func handlePair(conn *websocket.Conn, msg map[string]interface{}, gp *GeniusPlay) {
+func handlePair(conn *SafeConnection, msg map[string]interface{}, gp *GeniusPlay) {
 	uuid, ok := msg["uuid"].(string)
 	if !ok {
 		conn.WriteJSON(map[string]interface{}{"type": "error", "data": "UUID not found or is invalid"})
@@ -351,7 +370,7 @@ func handleConfig(msg map[string]interface{}, gp *GeniusPlay) {
 		}
 	}
 }
-func handleDelete(conn *websocket.Conn, msg map[string]interface{}) {
+func handleDelete(conn *SafeConnection, msg map[string]interface{}) {
 	fileName, ok := msg["file"].(string)
 	if !ok {
 		conn.WriteJSON(map[string]interface{}{"type": "delete", "success": false, "error": "Invalid filename"})
@@ -396,7 +415,7 @@ func corsMiddleware() gin.HandlerFunc {
 }
 func setupUploadDir() {
 	if err := os.MkdirAll(geniusPlayDataPath, 0755); err != nil {
-		log.Fatalf("Error creating upload directory: %v", err) // Use Fatalf for critical errors
+		log.Fatalf("Error creating upload directory: %v", err)
 	}
 }
 
@@ -432,7 +451,9 @@ func startHTTPServer(router *gin.Engine) {
 	}
 }
 func EmitAll(event, msg string) {
-	log.Printf("status %s\n", msg)
+	if event == "status" {
+		isConnected = msg == "true"
+	}
 	broadcastToWebSocketClients(event, msg)
 }
 
@@ -444,7 +465,7 @@ func broadcastToWebSocketClients(event string, data interface{}) {
 	for client := range wsClients {
 		if err := client.WriteJSON(message); err != nil {
 			log.Println("Error sending message to WebSocket client:", err)
-			client.Close()
+			client.conn.Close()
 			delete(wsClients, client)
 		}
 	}

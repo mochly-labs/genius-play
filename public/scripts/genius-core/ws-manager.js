@@ -72,9 +72,9 @@ class WebSocketManager {
         this.handleQuestionaryMessage(message);
         break;
       case "handshake":
+        this.handleStatusMessage(message);
         break;
       case "status":
-        console.log("Status msg:", message, message.type);
         this.handleStatusMessage(message);
         break;
       case "button":

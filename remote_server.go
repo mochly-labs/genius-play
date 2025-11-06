@@ -213,7 +213,7 @@ func processMessage(msg map[string]interface{}) {
 	default:
 		if uuid, ok := msg["uuid"].(string); ok {
 			isOnline = true
-			if isOnline {
+			if isConnected {
 				setStatus("Online")
 			} else {
 				setStatus("Online (Sem Arduino)")

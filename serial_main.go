@@ -39,6 +39,10 @@ func (p *ArduinoPairer) Pair() {
 			time.Sleep(10 * time.Millisecond)
 			continue
 		}
+		if !islegacy {
+			time.Sleep(10 * time.Millisecond)
+			continue
+		}
 
 		for _, port := range ports {
 			if err := p.connect(port); err != nil {
@@ -49,6 +53,9 @@ func (p *ArduinoPairer) Pair() {
 	}
 }
 func (p *ArduinoPairer) connect(portAddress string) error {
+	if !islegacy {
+		return nil
+	}
 	port, err := serial.Open(portAddress, &serial.Mode{BaudRate: 115200})
 	if err != nil {
 		return err
@@ -134,8 +141,8 @@ func (p *ArduinoPairer) disconnect() {
 		p.currentPort.Close()
 		p.connected = false
 		currentStatus.Online = false
+		isConnected = false
 		EmitAll("status", "false")
-		setStatus("Offline")
 		if isOnline {
 			statusItemG.SetTitle("Status: Online (Sem Controle)")
 			setStatus("Online (Sem Controle)")
@@ -151,10 +158,12 @@ func (p *ArduinoPairer) monitorConnection() {
 	for p.connected {
 		time.Sleep(100 * time.Millisecond)
 		if time.Since(lastPing) > time.Second*5 {
-			log.Default().Panic("[Pareamento] [v2] (⭍) Timed out")
+			log.Default().Println("[Pareamento] [Legacy] (⭍) Timed out")
 			p.disconnect()
-		} else if !islegacy {
-			log.Default().Println("Legacy -> Modern")
+		}
+		if !islegacy {
+			log.Default().Println("[Pareamento] [Legacy] (⭍) Disabled by user")
+			p.disconnect()
 		}
 	}
 }
