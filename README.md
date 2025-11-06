@@ -10,7 +10,7 @@ Atualizado em **Abril-Maio de 2025** com novo visual, novo sistema de perguntas,
 
 ## ✨ Destaques
 
-- Compatível com Arduino (botões físicos!)
+- Compatível com Arduino E ESP32 (botões físicos!)
 - Modo quiz com perguntas personalizadas!
 - Interface fullscreen focada na experiência de jogo!
 - Editor visual de questionários!
@@ -21,7 +21,7 @@ Atualizado em **Abril-Maio de 2025** com novo visual, novo sistema de perguntas,
 ## 🛠️ Recursos Planejados
 
 - Suporte a luzes físicas (via Arduino).
-- Mais controladores (Minecraft)
+- Mais controladores (Minecraft, ESP32(OK))
 - Configurações avançadas de rodada.
 
 ---
