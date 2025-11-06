@@ -4,7 +4,7 @@ Um minigame insano de **Passa ou Repassa** com suporte a **Arduino** e jogabilid
 Atualizado em **Abril-Maio de 2025** com novo visual, novo sistema de perguntas, e performance otimizada!
 
 > [!WARNING]
-> **Versão ALPHA** — bugs podem aparecer do nada... cuidado! 🐛💥
+> **Versão BETA** — bugs PODEM e VÃO aparecer do nada... cuidado! 🐛💥
 
 ---
 
